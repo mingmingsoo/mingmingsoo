@@ -1,49 +1,46 @@
 
 
-import java.util.Arrays;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.StringTokenizer;
 
 public class Solution {
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int t = sc.nextInt();
-		int tt = 1;
-		while(tt<=t) {
-			int city = sc.nextInt();
-			int d = sc.nextInt();
-			int[] arr = new int[city+2];
-			for (int i = 1; i < city+1; i++) {
-				arr[i] = sc.nextInt();
-			}
-			arr[0]=1; arr[city+1]=1;
-			int cnt = 0;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int t = Integer.parseInt(br.readLine().trim());
+        int tt = 1;
 
-			for (int i = 0; i < city+2; i++) {
-				if (arr[i] == 1) {
-					
-					int ni = i + 1;
-					int dnt = 0;
-					while (ni < city+2 && arr[ni] == 0 && dnt <= d) {
-						dnt++;
-						ni++;
-						if (dnt == d&&i+dnt<city+2) {
-							if (arr[i + dnt] != 1) {
-								arr[i + dnt] = 1;
-								cnt++;
-								i+=dnt-1;
-								break;
-							}
-						}
-					}
-					
-				}
+        while (tt <= t) {
+            StringTokenizer st = new StringTokenizer(br.readLine().trim());
+            int city = Integer.parseInt(st.nextToken());
+            int d = Integer.parseInt(st.nextToken());
 
-			}
-//		System.out.println(Arrays.toString(arr));
-			System.out.println("#"+tt+" "+cnt);
-			tt++;
-		}
+            st = new StringTokenizer(br.readLine().trim());
+            StringBuilder s = new StringBuilder("1");
+            for (int i = 0; i < city; i++) {
+                s.append(st.nextToken());
+            }
+            s.append("1");
 
-	}
+            int cnt = 0;
+            int dnt = 0;
+
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == '1') {
+                    dnt = 0;
+                } else {
+                    dnt++;
+                    if (dnt == d) {
+                        cnt++;
+                        dnt = 0;
+                    }
+                }
+            }
+
+            System.out.println("#" + tt + " " + cnt);
+            tt++;
+        }
+    }
 }
