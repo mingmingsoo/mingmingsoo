@@ -1,22 +1,24 @@
-
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Solution {
-
+	static int n;
+	static int m;
 	public static void main(String[] args) {
-		// 모든 경우의 수 따지기
-		// 첫번째 줄은 무조건 W, 마지막 줄은 무조건 R
-		// W는 1부터 될 수 있음
-		// B는 W+1부터 N-2까지 될 수 있음
-		// R는 B+1부터 N-1까지
+
+		// 맨 첫줄은 무조건 흰색
+		// 맨 마지막 줄은 무조건 빨간색
+		// 블루는 흰색+1, red-1
+		// 바꿔야 하는 숫자는 최소로
 
 		Scanner sc = new Scanner(System.in);
 		
 		int t = sc.nextInt();
-		int tt =1;
+		int tt = 1;
+		
 		while(tt<=t) {
-			int n = sc.nextInt();
-			int m = sc.nextInt();
+			n = sc.nextInt();
+			m = sc.nextInt();
 			
 			char[][] grid = new char[n][m];
 			for (int i = 0; i < n; i++) {
@@ -25,36 +27,42 @@ public class Solution {
 					grid[i][j] = line.charAt(j);
 				}
 			}
+//		System.out.println(Arrays.deepToString(grid));
 			
+			// W와 B가 가능한 범위 모두 따져주기 (R은 두 문자에 의해 배치되므로)
 			int min = Integer.MAX_VALUE;
-			for (int i = 1; i < n - 1; i++) {
-				for (int j = i + 1; j < n; j++) {
+			for (int i = 1; i < n - 1; i++) { // W
+				for (int j = i + 1; j < n; j++) { // B
+					// i = 0일땐 무조건 w, 바꿔야 하는 갯수 계산
 					int cnt = 0;
-					cnt += change_color(grid[0], 'W');
-					for (int w = 1; w < i; w++) {
-						cnt += change_color(grid[w], 'W');
+					cnt+= change_color(grid[0],'W');
+					// w
+					for(int k = 1; k<i;k++) {
+						cnt+= change_color(grid[k],'W');
 					}
-					for (int b = i; b < j; b++) {
-						cnt += change_color(grid[b], 'B');
+					// b
+					for(int k = i; k<j;k++) {
+						cnt+= change_color(grid[k],'B');
 					}
-					for (int r = j; r < n-1; r++) {
-						cnt += change_color(grid[r], 'R');
+					// r
+					for(int k = j; k<n-1;k++) {
+						cnt+= change_color(grid[k],'R');
 					}
-					
-					cnt += change_color(grid[n - 1], 'R');
+					// i = n-1일땐 무조건 r, 바꿔야 하는 갯수 계산
+					cnt+= change_color(grid[n-1],'R');
 					min = Math.min(cnt, min);
-					
 				}
 			}
 			System.out.println("#"+tt+" "+min);
 			tt++;
 		}
 
+
 	}
 
 	private static int change_color(char[] cha, char c) {
 		int change = 0;
-		for (int j = 0; j<cha.length;j++) {
+		for(int j = 0; j<m;j++) {
 			if(cha[j]!=c) {
 				change++;
 			}
