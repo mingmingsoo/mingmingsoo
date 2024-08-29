@@ -1,6 +1,4 @@
 
-
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -20,40 +18,29 @@ public class Main {
 			arr[arridx++] = i;
 		}
 
-		comb(0, n, r, arr, sel);
+		comb(0, 0, n, r, arr, sel);
 
 	}
 
 	static StringBuilder sb;
 
-	private static void comb(int idx, int n, int r, int[] arr, int[] sel) {
-		if (idx == r) {
+	private static void comb(int idx, int sidx, int n, int r, int[] arr, int[] sel) {
+		if (sidx == r) {
 			sb = new StringBuilder();
-			boolean bool = true;
-
-			for (int i = r - 1; i > 0; i--) {
-				if (sel[i] - sel[i - 1] < 0) {
-					bool = false;
-					if (!bool) {
-						break;
-					}
-				}
+			for(int ele: sel) {
+				sb.append(ele+" ");
 			}
-			if (bool) {
-				for (int ele : sel) {
-					sb.append(ele + " ");
-				}
-				System.out.println(sb);
-			}
-
+			System.out.println(sb);
 			return;
 		}
 
-		for (int i = 0; i < n; i++) {
-			sel[idx] = arr[i];
-			comb(idx + 1, n, r, arr, sel);
-
+		if (idx == n) {
+			return;
 		}
+
+		sel[sidx] = arr[idx];
+		comb(idx, sidx + 1, n, r, arr, sel); // 선택했을 때 sidx는 당연히 커지고
+		comb(idx + 1, sidx, n, r, arr, sel); // 선택안했을 때 idx도 커져야지 -> 그래야 선택 안한거지
 
 	}
 
