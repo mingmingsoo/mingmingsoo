@@ -1,12 +1,8 @@
 
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 public class Main {
 
@@ -46,7 +42,6 @@ public class Main {
 
 		edgelist = new ArrayList<>();
 
-		Set<Integer> set = new HashSet<>();
 
 		n = sc.nextInt();
 		m = sc.nextInt();
@@ -79,10 +74,6 @@ public class Main {
 //		}
 
 		visited = new boolean[n][m];
-		checkunique = new int[islandnum + 1][islandnum + 1];
-		for (int i = 0; i < islandnum + 1; i++) {
-			Arrays.fill(checkunique[i], 20); // 길이 최대가 8
-		}
 
 //		System.out.println(Arrays.deepToString(checkunique));
 
@@ -104,7 +95,6 @@ public class Main {
 
 		int cnt = 0;
 		int sum = 0;
-		int check = parents[1];
 //		System.out.println(edgelist);
 		for (int i = 0; i < edgelist.size(); i++) {
 			int ap = findSet(edgelist.get(i).A);
@@ -160,7 +150,6 @@ public class Main {
 	static boolean[][] visited;
 	static int idx = 0;
 	static List<Edge> edgelist;
-	static int[][] checkunique;
 	static int islandnum;
 
 	private static void caldist(int r, int c, int from) {
@@ -171,8 +160,7 @@ public class Main {
 			while (nr >= 0 && nr < n && nc >= 0 && nc < m && grid[nr][nc] != from) {
 				if (nr >= 0 && nr < n && nc >= 0 && nc < m && grid[nr][nc] != 0) {
 					int to = grid[nr][nc];
-					if (dist >= 2 && from < to && checkunique[from][to] > dist) {
-						checkunique[from][to] = dist;
+					if (dist >= 2 && from < to) {
 						edgelist.add(new Edge(from, to, dist));
 					}
 					break;
