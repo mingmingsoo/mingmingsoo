@@ -1,8 +1,5 @@
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
@@ -10,83 +7,90 @@ public class Solution {
 
 	public static void main(String[] args) {
 
-		// 가만히 있을 수 도 있으므로 최대 time까지 방문한 곳 갯수를 세고.
-		// -> 최대 어디까지 갈 수 있는가? 이므로 visited 초기화 필요 X
-		// 시간 별로 퍼져나가므로 bfs
+		// 안움직여도 되므로 최대 어디까지 갈 수 있는지를 세면 됨. 방문체크 초기화할 필요도 없음!
+
 		Scanner sc = new Scanner(System.in);
-		
+
 		int t = sc.nextInt();
-		int tt =1;
-		while(tt<=t) {
+		int tt = 1;
+
+		while (tt <= t) {
 			n = sc.nextInt();
 			m = sc.nextInt();
 			int r = sc.nextInt();
 			int c = sc.nextInt();
-			time_limit = sc.nextInt();
+			limit = sc.nextInt();
 
 			grid = new int[n][m];
 			visited = new boolean[n][m];
-
 			for (int i = 0; i < n; i++) {
 				for (int j = 0; j < m; j++) {
 					grid[i][j] = sc.nextInt();
 				}
 			}
 
-			cnt = 0;
-			bfs(r, c);
-			System.out.println("#"+tt+" "+cnt);
-			tt++;
-//			for (int i = 0; i < list.size(); i++) {
-//				System.out.println(Arrays.toString(list.get(i)));
-//			}
+			ans = 0;
+			bfs(r, c, 1);
+			System.out.println("#" + tt++ + " " + ans);
 		}
-
 
 	}
 
+	static int ans;
 	static int n;
 	static int m;
-	static int time_limit;
+	static int limit;
 	static int[][] grid;
 	static boolean[][] visited;
-	static int cnt;
-	static List<int[]> list = new ArrayList<>();
 
-	private static void bfs(int r, int c) {
+	private static void bfs(int r, int c, int t) {
 		Queue<int[]> q = new LinkedList<>();
-		q.add(new int[] { r, c, 1 }); // 현재 위치와 time
 		visited[r][c] = true;
+		q.add(new int[] { r, c, t });
 
-		// 이동하는 과정
 		while (!q.isEmpty()) {
-			int[] node = q.poll();
-			int rnode = node[0];
-			int cnode = node[1];
-			int time = node[2];
+			int size = q.size();
+			for (int i = 0; i < size; i++) {
+				int[] node = q.poll();
+				int rnode = node[0];
+				int cnode = node[1];
+				int time = node[2];
 
-			// 시간 제한 조건
-			if (time > time_limit) {
-				break;
-			}
-			// 경우의 수
-			list.add(node);
-			cnt++; // 나 지금 이동 했으므로
-
-			// 다음 이동 : 갈 방향을 얻어야함.
-			for (int[] dir : getdir(grid[rnode][cnode])) { // 현재 위치에서 갈 수 있는 곳 찾기.
-				int nr = rnode + dir[0];
-				int nc = cnode + dir[1];
-				if (nr >= 0 && nr < n && nc >= 0 && nc < m && !visited[nr][nc] && isok(grid[nr][nc], dir)) {
-					q.add(new int[] { nr, nc, time + 1 });
-					visited[nr][nc] = true;
+				if (time > limit) {
+					return;
 				}
+				ans++;
+
+				for (int[] dir : getdir(rnode, cnode)) {
+					int nr = rnode + dir[0];
+					int nc = cnode + dir[1];
+					if (nr >= 0 && nr < n && nc >= 0 && nc < m && !visited[nr][nc] && connected(dir, nr, nc)) {
+						visited[nr][nc] = true;
+						q.add(new int[] { nr, nc, time + 1 });
+					}
+				}
+
 			}
 		}
+
 	}
 
-	private static int[][] getdir(int type) {
-		switch (type) {
+	private static boolean connected(int[] dir, int nr, int nc) {
+		if (dir[0] == 0 && dir[1] == 1) {
+			return grid[nr][nc] == 1 || grid[nr][nc] == 3 || grid[nr][nc] == 6 || grid[nr][nc] == 7;
+		} else if (dir[0] == 0 && dir[1] == -1) {
+			return grid[nr][nc] == 1 || grid[nr][nc] == 3 || grid[nr][nc] == 4 || grid[nr][nc] == 5;
+		} else if (dir[0] == -1 && dir[1] == 0) {
+			return grid[nr][nc] == 1 || grid[nr][nc] == 2 || grid[nr][nc] == 5 || grid[nr][nc] == 6;
+		} else if (dir[0] == 1 && dir[1] == 0) {
+			return grid[nr][nc] == 1 || grid[nr][nc] == 2 || grid[nr][nc] == 4 || grid[nr][nc] == 7;
+		}
+		return false;
+
+	}
+
+	private static int[][] getdir(int r, int c) {
+		switch (grid[r][c]) {
 		case 1:
 			return new int[][] { { -1, 0 }, { 1, 0 }, { 0, 1 }, { 0, -1 } };
 		case 2:
@@ -102,26 +106,8 @@ public class Solution {
 		case 7:
 			return new int[][] { { -1, 0 }, { 0, -1 } };
 		default:
-			return new int[0][0]; // 이동 안할때
+			return new int[][] { { 0, 0 } };
+
 		}
 	}
-
-	private static boolean isok(int next, int[] dir) {
-		int x = dir[0];
-		int y = dir[1];
-
-		if (x == 0 && y == 1) {
-			return next == 1 || next == 3 || next == 6 || next == 7;
-		} else if (x == 0 && y == -1) {
-			return next == 1 || next == 3 || next == 4 || next == 5;
-		} else if (x == 1 && y == 0) {
-			return next == 1 || next == 2 || next == 4 || next == 7;
-		} else if (x == -1 && y == 0) {
-			return next == 1 || next == 2 || next == 5 || next == 6;
-		} else {
-			return false;
-		}
-
-	}
-
 }
