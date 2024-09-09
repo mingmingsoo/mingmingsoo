@@ -1,8 +1,5 @@
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
@@ -16,83 +13,68 @@ public class Solution {
 		int tt = 1;
 
 		while (tt <= t) {
-			n = sc.nextInt();
-			limit = sc.nextInt();
-			int k = sc.nextInt();
+			n = sc.nextInt(); // 변의 길이
+			limit = sc.nextInt(); // 격리 시간
+			k = sc.nextInt(); // 미생물 군집 수
 
-			xlist = new ArrayList<>();
-			ylist = new ArrayList<>();
-			vlist = new ArrayList<>();
-			dlist = new ArrayList<>();
-			for (int i = 0; i < k; i++) {
-				xlist.add(sc.nextInt());
-				ylist.add(sc.nextInt());
-				vlist.add(sc.nextInt());
-				dlist.add(sc.nextInt());
-			}
-			q = new LinkedList<>();
+			rarr = new int[k]; // x
+			carr = new int[k]; // y
+			varr = new int[k]; // virus
+			darr = new int[k];
 
 			for (int i = 0; i < k; i++) {
-				q.add(new int[] { xlist.get(i), ylist.get(i), vlist.get(i), dlist.get(i) });
+				rarr[i] = sc.nextInt();
+				carr[i] = sc.nextInt();
+				varr[i] = sc.nextInt();
+				darr[i] = sc.nextInt();
 			}
-			vsum = 0;
-			bfs();
-			for (int i = 0; i < vlist.size(); i++) {
-				vsum += vlist.get(i);
+			int vsum = 0;
+			move(); // time
+			for (int i = 0; i < k; i++) {
+				vsum += varr[i];
 			}
 			System.out.println("#" + tt + " " + vsum);
 			tt++;
+
 		}
 
 	}
 
-	static int limit;
-	static int vsum;
-	static Queue<int[]> q;
-	static List<Integer> vlist;
-	static List<Integer> dlist;
-	static List<Integer> xlist;
-	static List<Integer> ylist;
 	static int n;
+	static int limit;
+	static int k;
 
-	private static void bfs() {
-		// 기본 이동.
-		// 모두 동시에 방향대로 가는데 x, y 가 0이나 n-1이 되면 미생물 반타작 & 위치 변경.
-		// 만약 x y 위치가 같은 애들이 생기면 vlist 합쳐지고 방향은 제일 큰 애들 따른다. ( 합쳐지면 x,y -1 로 바꾸기)
+	static int[] rarr;
+	static int[] carr;
+	static int[] varr;
+	static int[] darr;
+	static Queue<int[]> q;
+
+	private static void move() {
 
 		int time = 0;
+
+		q = new LinkedList<>();
+		for (int i = 0; i < k; i++) {
+			q.add(new int[] { rarr[i], carr[i], varr[i], darr[i] });
+		}
 
 		while (!q.isEmpty()) {
 			int size = q.size();
 			time++;
-
-			int idx = 0;
 			for (int i = 0; i < size; i++) {
-				int[] xy = q.poll();
-				int x = xy[0]; // 1
-				int y = xy[1]; // 1 이 뽑혔음.
-				int v = xy[2]; // 미생물 수
-				int d = xy[3]; // 방향
+				int[] node = q.poll();
 
-				int[] move_ = move(x, y, v, d);
-				x = move_[0];
-				y = move_[1];
-				v = move_[2];
-				d = move_[3];
+				int[] node1 = move(node);
+				node = node1;
 
-				int[] redzone_ = redzone(x, y, v, d);
-				x = redzone_[0];
-				y = redzone_[1];
-				v = redzone_[2];
-				d = redzone_[3];
+				int[] node2 = redzone(node);
+				node = node2;
 
-				xlist.set(idx, x);
-				ylist.set(idx, y);
-				vlist.set(idx, v);
-				dlist.set(idx, d);
-				idx++;
-
-
+				rarr[i] = node[0];
+				carr[i] = node[1];
+				varr[i] = node[2];
+				darr[i] = node[3];
 			}
 			merge();
 			if (time == limit) {
@@ -102,70 +84,48 @@ public class Solution {
 
 	}
 
-	private static int[] move(int x, int y, int v, int d) {
-		if (d == 1) {
-			x--;
-		} else if (d == 2) {
-			x++;
-		} else if (d == 3) {
-			y--;
-		} else {
-			y++;
-		}
-		return new int[] { x, y, v, d };
-
-	}
-
 	private static void merge() {
 
-		for (int i = 0; i < xlist.size(); i++) {
-			List<Integer> tmpidx = new ArrayList<>();
-			tmpidx.add(i);
-			for (int j = i + 1; j < xlist.size(); j++) {
-				if (xlist.get(i) == xlist.get(j) && ylist.get(i) == ylist.get(j)) {
-					tmpidx.add(j);
-				}
-			}
-			if (tmpidx.size() > 1) {
+		for (int i = 0; i < k; i++) {
+			int[] tmp = new int[k];
+			tmp[i]++;
+			int virustotal = varr[i];
+			int maxvirus = varr[i];
+			int maxidx = i;
 
-				// 미생물 크기 비교.
-				// 미생물 합.
-				int maxvirus = 0;
-				int maxidx = -1;
-				int sumvirus = 0;
-				int remove = 0;
-				for (int j = 0; j < tmpidx.size(); j++) {
-					sumvirus += vlist.get(tmpidx.get(j));
-					if (maxvirus < vlist.get(tmpidx.get(j))) {
-						maxvirus = vlist.get(tmpidx.get(j));
-						maxidx = tmpidx.get(j);
-						remove = j;
+			for (int j = i + 1; j < k; j++) {
+				if (rarr[i] == rarr[j] && carr[i] == carr[j]) {
+					tmp[j]++;
+					virustotal += varr[j];
+					if (maxvirus < varr[j]) {
+						maxvirus = varr[j];
+						maxidx = j;
 					}
 				}
-				tmpidx.remove(remove);
-				// 가장 큰 미생물을 가지는 위치를 알게 됐음 = maxidx // 나머지 kill
-				vlist.set(maxidx, sumvirus);
-				// 예를 들어 죽여야되는 위치가 2, 3 이라고 해보자..
-				// 위치 안꼬이게 내림차순 정렬하고 삭제
-				Collections.sort(tmpidx, Collections.reverseOrder());
-				for (int j = 0; j < tmpidx.size(); j++) {
-					xlist.remove((int) tmpidx.get(j));
-					ylist.remove((int) tmpidx.get(j));
-					vlist.remove((int) tmpidx.get(j));
-					dlist.remove((int) tmpidx.get(j));
-				}
-				i--;
 			}
+
+			varr[maxidx] = virustotal;
+			for (int j = 0; j < k; j++) {
+				if (tmp[j] == 1 && j != maxidx) {
+					varr[j] = 0;
+				}
+			}
+
 		}
 
-		for (int i = 0; i < xlist.size(); i++) {
-			q.add(new int[] { xlist.get(i), ylist.get(i), vlist.get(i), dlist.get(i) });
+		for (int i = 0; i < k; i++) {
+			q.add(new int[] { rarr[i], carr[i], varr[i], darr[i] });
 		}
 
 	}
 
-	private static int[] redzone(int x, int y, int v, int d) {
-		if (x == 0 || x == n - 1 || y == 0 || y == n - 1) {
+	private static int[] redzone(int[] node) {
+		int r = node[0];
+		int c = node[1];
+		int v = node[2];
+		int d = node[3];
+
+		if (r == 0 || r == n - 1 || c == 0 || c == n - 1) {
 			v /= 2;
 			if (d == 1) {
 				d = 2;
@@ -173,12 +133,28 @@ public class Solution {
 				d = 1;
 			} else if (d == 3) {
 				d = 4;
-			} else if (d == 4) {
+			} else {
 				d = 3;
 			}
 		}
-		return new int[] { x, y, v, d };
 
+		return new int[] { r, c, v, d };
+	}
+
+	private static int[] move(int[] node) {
+		int r = node[0];
+		int c = node[1];
+		if (node[3] == 1) {
+			r--;
+		} else if (node[3] == 2) {
+			r++;
+		} else if (node[3] == 3) {
+			c--;
+		} else {
+			c++;
+		}
+
+		return new int[] { r, c, node[2], node[3] };
 	}
 
 }
