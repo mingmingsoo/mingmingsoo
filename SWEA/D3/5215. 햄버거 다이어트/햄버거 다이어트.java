@@ -7,48 +7,34 @@ public class Solution {
 	public static void main(String[] args) {
 
 		Scanner sc = new Scanner(System.in);
-
+		
 		int t = sc.nextInt();
-		int tt = 1;
-
-		while (tt <= t) {
-			n = sc.nextInt();
-			limit = sc.nextInt();
-
-			taste = new int[n];
-			cals = new int[n];
-
-			for (int i = 0; i < n; i++) {
-				taste[i] = sc.nextInt();
-				cals[i] = sc.nextInt();
+		
+		int tt =1 ;
+		
+		while(tt<=t) {
+			int n = sc.nextInt();
+			int k = sc.nextInt();
+			
+			int[] score = new int[n + 1];
+			int[] cal = new int[n + 1];
+			
+			for (int i = 1; i < n + 1; i++) {
+				score[i] = sc.nextInt();
+				cal[i] = sc.nextInt();
 			}
-			bestscore = 0;
-			makeburger(0, 0, 0);
-			System.out.println("#" + tt + " " + bestscore);
+			int[] dp = new int[k + 1];
+			
+			for (int i = 1; i < n + 1; i++) {
+				for (int j = k; j >= cal[i]; j--) {
+					dp[j] = Math.max(dp[j], score[i] + dp[j - cal[i]]);
+				}
+			}
+			System.out.println("#"+tt+" "+dp[k]);
+			
 			tt++;
 		}
 
-	}
-
-	static int bestscore;
-	static int limit;
-	static int[] taste;
-	static int[] cals;
-	static int n;
-
-	private static void makeburger(int idx, int sum_taste, int sum_cal) {
-		if (sum_cal > limit) {
-			return;
-		}
-		if (idx == n) {
-			if (sum_cal <= limit) {
-				bestscore = Math.max(bestscore, sum_taste);
-			}
-			return;
-		}
-
-		makeburger(idx + 1, sum_taste + taste[idx], sum_cal + cals[idx]);
-		makeburger(idx + 1, sum_taste, sum_cal);
 
 	}
 
