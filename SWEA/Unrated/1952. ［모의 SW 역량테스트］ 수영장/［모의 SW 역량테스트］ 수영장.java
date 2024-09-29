@@ -10,9 +10,10 @@ public class Solution {
 		int t = sc.nextInt();
 		
 		int tt = 1;
+		StringBuilder sb = new StringBuilder();
 		
 		while(tt<=t) {
-			
+			sb.append("#"+tt+" ");
 			int fees[] = new int[4];
 			int plans[] = new int[13];
 
@@ -41,9 +42,10 @@ public class Solution {
 				if (i == 12)
 					dp[i] = Math.min(dp[i], fees[3]);
 			}
-			System.out.println("#"+tt+" "+dp[12]);
+			sb.append(dp[12]+"\n");
 			tt++;
 		}
+		System.out.println(sb);
 
 
 	}
