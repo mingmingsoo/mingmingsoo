@@ -1,62 +1,56 @@
 
-
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-	static int n;
-	static int m;
 
 	public static void main(String[] args) {
 
 		Scanner sc = new Scanner(System.in);
 
 		while (true) {
-
-			n = sc.nextInt();
 			m = sc.nextInt();
-			
-			if(n==0&&m==0) {
+			n = sc.nextInt();
+			if (m == 0 && n == 0) {
 				return;
 			}
-
-			int[][] grid = new int[m][n];
-
-			for (int i = 0; i < m; i++) {
-				for (int j = 0; j < n; j++) {
+			grid = new int[n][m];
+			visited = new boolean[n][m];
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
 					grid[i][j] = sc.nextInt();
 				}
 			}
-			
 			int cnt = 0;
-			for (int i = 0; i < m; i++) {
-				for (int j = 0; j < n; j++) {
-					if (grid[i][j] == 1) {
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < m; j++) {
+					if (grid[i][j] == 1 && !visited[i][j]) {
 						cnt++;
-						dfs(grid, i, j);
+						dfs(i, j);
 					}
 				}
 			}
 			System.out.println(cnt);
 		}
+
 	}
 
-	private static void dfs(int[][] grid, int i, int j) {
+	static int[] row = { -1, 1, 0, 0, 1, 1, -1, -1 };
+	static int[] col = { 0, 0, 1, -1, 1, -1, 1, -1 };
 
-		grid[i][j] = 0;
+	static boolean[][] visited;
+	static int[][] grid;
+	static int n;
+	static int m;
 
-		int[] row = { 1, -1, 0, 0, 1, 1, -1, -1 };
-		int[] col = { 0, 0, 1, -1, 1, -1, 1, -1 };
+	private static void dfs(int r, int c) {
+		visited[r][c] = true;
 
 		for (int k = 0; k < 8; k++) {
-			int nr = i + row[k];
-			int nc = j + col[k];
-
-			if (nr >= 0 && nr < m && nc >= 0 && nc < n && grid[nr][nc] == 1) {
-				dfs(grid, nr, nc);
+			int nr = r + row[k];
+			int nc = c + col[k];
+			if (nr >= 0 && nr < n && nc >= 0 && nc < m && !visited[nr][nc] && grid[nr][nc] == 1) {
+				dfs(nr, nc);
 			}
 		}
-
 	}
-
 }
