@@ -57,15 +57,12 @@ public class Solution {
 						d = 1;
 					} else if (order == '_' && m == 0) {
 						d = 2;
-
 					} else if (order == '_' && m != 0) {
 						d = 3;
 					} else if (order == '|' && m == 0) {
 						d = 1;
 					} else if (order == '|' && m != 0) {
 						d = 0;
-					} else if (order == '?') {
-
 					} else if (order >= '0' && order <= '9') {
 						m = (order - 48);
 					} else if (order == '+') {
