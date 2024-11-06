@@ -1,6 +1,4 @@
 
-
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -8,6 +6,9 @@ import java.util.Scanner;
 public class Solution {
 
 	public static void main(String[] args) {
+
+		// 아이디어 1. visited를 4차원 배열로 [r][c][방향][메모리]
+		// 아이디어 2. 왼쪽이나 위로 옮길 때 (x - 1 + r) % r 즉 + r 해주기
 
 		Scanner sc = new Scanner(System.in);
 
