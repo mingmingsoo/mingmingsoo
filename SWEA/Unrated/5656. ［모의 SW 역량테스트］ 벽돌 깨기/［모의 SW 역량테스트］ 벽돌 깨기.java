@@ -1,5 +1,4 @@
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,7 +40,7 @@ public class Solution {
 //        int n = Integer.parseInt(st.nextToken());
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
-
+        StringBuilder sb = new StringBuilder();
         int t = Integer.parseInt(br.readLine());
         int tt = 1;
         while (tt <= t) {
@@ -67,9 +66,10 @@ public class Solution {
             }
             ans = Integer.MAX_VALUE;
             duplePerm(0);
-            System.out.println("#"+tt+" "+ans);
+            sb.append("#").append(tt).append(" ").append(ans).append("\n");
             tt++;
         }
+        System.out.println(sb);
     }
 
     //    static boolean[] visited;
