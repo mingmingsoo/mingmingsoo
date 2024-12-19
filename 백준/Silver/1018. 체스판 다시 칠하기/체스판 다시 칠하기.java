@@ -1,115 +1,105 @@
 
-import java.util.Arrays;
-import java.util.Scanner;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.StringTokenizer;
+
+/**
+ * 시작점이 W이거나 B이거나
+ */
 public class Main {
 
-	static int n;
-	static int m;
+    public static void main(String[] args) throws IOException {
 
-	public static void main(String[] args) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-		Scanner sc = new Scanner(System.in);
+        st = new StringTokenizer(br.readLine());
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+        grid = new Character[n][m];
 
-		n = sc.nextInt();
-		m = sc.nextInt();
+        for (int i = 0; i < n; i++) {
+            String str = br.readLine();
+            for (int j = 0; j < m; j++) {
+                grid[i][j] = str.charAt(j);
+            }
+        }
+        int startI;
+        int startJ;
+        int ansW = Integer.MAX_VALUE;
+        int ansB = Integer.MAX_VALUE;
+        for (int i = 0; i <= n-8; i++) {
+            for (int j = 0; j <= m-8; j++) {
+                startI = i;
+                startJ = j;
+                int tmpW = changeW(startI, startJ);
+                int tmpB = changeB(startI, startJ);
+                if(tmpW<ansW){
+                    ansW = tmpW;
+                }
+                if(tmpB<ansB){
+                    ansB = tmpB;
+                }
+            }
+        }
 
-		char[][] grid = new char[n][m];
+//        System.out.println(ansW);
+//        System.out.println(ansB);
+        if(ansW > ansB){
+            System.out.println(ansB);
+        }
+        else{
+            System.out.println(ansW);
+        }
+    }
 
-		for (int i = 0; i < n; i++) {
-			String line = sc.next();
-			for (int j = 0; j < m; j++) {
-				grid[i][j] = line.charAt(j);
-			}
-		}
-		int ans = Integer.MAX_VALUE;
-		int ix = 0;
-		int jx = 0;
-		while (true) {
-//			System.out.println(ix+" "+jx);
-			int cnt = 0;
-//			System.out.println(change_cnt_wb(grid, ix, jx));
-//			System.out.println(change_cnt_bw(grid, ix, jx));
-			cnt = Math.min(change_cnt_wb(grid, ix, jx), change_cnt_bw(grid, ix, jx));
-			ans = Math.min(ans, cnt);
+    private static int changeB(int startI, int startJ) {
+        int cnt = 0;
 
-			jx++;
-			if (jx + 8 > m) {
-				jx=0;
-				ix++;
-			}
-			if (ix + 8 > n) {
-				ix--;
-			}
-			if (ix + 8 >= n && jx + 8 >= m) {
-				break;
-			}
-		}
-		
-		int last = Math.min(change_cnt_wb(grid, n-8, m-8), change_cnt_bw(grid, n-8, m-8));
-		ans = Math.min(ans, last);
-		System.out.println(ans);
+        for (int i = startI; i < startI+8; i++) {
+            for (int j = startJ; j < startJ+8; j++) {
+                if((i+j)%2==0&& grid[i][j]=='W'){
+                    cnt++;
+                }
+                else if((i+j)%2==1&&grid[i][j]=='B'){
+                    cnt++;
+                }
 
-	}
+            }
+        }
 
-	private static int change_cnt_wb(char[][] grid, int i, int j) {
-		// w로 시작
-		int cnt = 0;
-		char[] cha = { 'W', 'B' };
-		int idx = 0;
-		int idx2=1;
-		for (int r = i; r < i + 8; r++) {
-			for (int c = j; c < j + 8; c++) {
-				if (r % 2 == 0) {
-					if (r < n && c < m && grid[r][c] != cha[idx]) {
-						cnt++;
-						idx = 1 - idx;
-					} else {
-						idx = 1 - idx;
-					}
-				} else if (r % 2 == 1) {
-					
-					if (r < n && c < m && grid[r][c] != cha[idx2]) {
-						cnt++;
-						idx2 = 1 - idx2;
-					} else {
-						idx2 = 1 - idx2;
-					}
-				}
-			}
-		}
-		// b로 시작
-		return cnt;
-	}
 
-	private static int change_cnt_bw(char[][] grid, int i, int j) {
-		// w로 시작
-		int cnt = 0;
-		char[] cha = { 'B', 'W' };
-		int idx = 0;
-		int idx2=1;
-		for (int r = i; r < i + 8; r++) {
-			for (int c = j; c < j + 8; c++) {
-				if (r % 2 == 0) {
-					if (r < n && c < m && grid[r][c] != cha[idx]) {
-						cnt++;
-						idx = 1 - idx;
-					} else {
-						idx = 1 - idx;
-					}
-				} else if (r % 2 == 1) {
-					
-					if (r < n && c < m && grid[r][c] != cha[idx2]) {
-						cnt++;
-						idx2 = 1 - idx2;
-					} else {
-						idx2 = 1 - idx2;
-					}
-				}
-			}
-		}
-		// b로 시작
-		return cnt;
-	}
 
+
+
+        return cnt;
+    }
+
+    static int n;
+    static int m;
+    static Character[][] grid;
+
+    private static int changeW(int startI, int startJ) {
+        int cnt = 0;
+
+        for (int i = startI; i < startI+8; i++) {
+            for (int j = startJ; j < startJ+8; j++) {
+                if((i+j)%2==0&& grid[i][j]=='B'){
+                    cnt++;
+                }
+                else if((i+j)%2==1&&grid[i][j]=='W'){
+                    cnt++;
+                }
+
+            }
+        }
+
+
+
+
+        return cnt;
+    }
 }
