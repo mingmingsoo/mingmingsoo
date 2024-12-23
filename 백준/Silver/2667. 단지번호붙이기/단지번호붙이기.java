@@ -1,69 +1,90 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
 
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+
+/**
+ * 1은 집, 0은 집X
+ * 철수는 연결된 집에 단지 번호를 붙히려고함
+ * 총 단지수를 출력
+ * 단지에 속하는 집의 수를 오름차순으로 출력
+ * <p>
+ * BFS로 풀기
+ * <p>
+ * 필요한 메서드
+ * bfs
+ * <p>
+ * 필요한 변수
+ * num(단지번호)
+ * List<int> list
+ */
 public class Main {
 
-	public static void main(String[] args) {
+    static boolean[][] visited;
+    static int[][] grid;
+    static int n;
 
-		Scanner sc = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
 
-		n = sc.nextInt();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        n = Integer.parseInt(br.readLine());
+        grid = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            String tmp = br.readLine();
+            for (int j = 0; j < n; j++) {
+                grid[i][j] = tmp.charAt(j) - '0';
+            }
+        }
+        int num = 0; // 단지 수
+        List<Integer> list = new ArrayList<>();
+        visited = new boolean[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (!visited[i][j] && grid[i][j] == 1) {
+                    int cnt = bfs(i, j, 0);
+                    num++;
+                    list.add(cnt);
+                }
+            }
+        }
+        Collections.sort(list);
+        StringBuilder sb = new StringBuilder();
+        sb.append(num).append("\n");
+        while (!list.isEmpty()) {
+            sb.append(list.remove(0)).append("\n");
+        }
+        System.out.println(sb);
 
-		grid = new int[n][n];
+    }
 
-		for (int i = 0; i < n; i++) {
-			String s = sc.next();
-			for (int j = 0; j < n; j++) {
-				grid[i][j] = s.charAt(j) - '0';
-			}
-		}
+    private static int bfs(int i, int j, int cnt) {
+        int[] row = new int[]{-1,1,0,0};
+        int[] col = new int[]{0,0,1,-1};
+        Queue<int[]> q = new LinkedList<>();
+        q.add(new int[]{i, j});
+        visited[i][j] = true;
+        while (!q.isEmpty()) {
+            for (int k = 0; k < q.size(); k++) {
+                int[] node = q.poll();
+                int r = node[0];
+                int c = node[1];
+                cnt++;
 
-		// 단지 정보 담는 list
-		dong_list = new ArrayList<>();
+                for (int d = 0; d < 4; d++) {
+                    int nr = r + row[d];
+                    int nc = c + col[d];
+                    if(nr>=0 && nr<n&& nc>=0 && nc<n&& !visited[nr][nc]&& grid[nr][nc]==1){
+                        q.add(new int[]{nr,nc});
+                        visited[nr][nc] = true;
+                    }
+                }
 
-		int cnt = 0;
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				if (grid[i][j] == 1) {
-					dong_list.add(dfs(grid, i, j));
-					cnt++;
-				}
-			}
-		}
-		System.out.println(cnt); // 총 동의 갯수
+            }
 
-		Collections.sort(dong_list); // 동리스트 오름차순
-
-		for (int i = 0; i < dong_list.size(); i++) {
-			System.out.println(dong_list.get(i));
-		}
-
-	}
-
-	static int n;
-	static List<Integer> dong_list;
-	static int[][] grid;
-
-	private static int dfs(int[][] grid, int i, int j) {
-		int each = 1;
-		grid[i][j] = 0; // 방문처리
-
-		int[] row = { 1, -1, 0, 0 };
-		int[] col = { 0, 0, 1, -1 };
-
-		for (int k = 0; k < 4; k++) {
-			int nr = i + row[k];
-			int nc = j + col[k];
-
-			if (nr >= 0 && nr < n && nc >= 0 && nc < n && grid[nr][nc] == 1) {
-				each += dfs(grid, nr, nc);
-			}
-
-		}
-		return each;
-
-	}
+        }
+        return cnt;
+    }
 
 }
