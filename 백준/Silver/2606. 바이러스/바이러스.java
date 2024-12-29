@@ -1,59 +1,58 @@
-
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
+/**
+ * 1번과 연결된 간선을 통해 정점 갯수 구하기
+ */
 public class Main {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        int V = Integer.parseInt(br.readLine());
+        int E = Integer.parseInt(br.readLine());
 
-		Scanner sc = new Scanner(System.in);
+        visited  = new boolean[V+1];
 
-		int n = sc.nextInt(); // 정점 수
-		int m = sc.nextInt(); // 간선 수
+        grid = new ArrayList[V+1];
+        for (int i = 1; i < V+1; i++) {
+            grid[i] = new ArrayList<Integer>();
+        }
 
-		grid = new ArrayList<>();
-		visited = new boolean[n+1];
+        for (int i = 0; i < E; i++) {
+            st = new StringTokenizer(br.readLine());
+            int from = Integer.parseInt(st.nextToken());
+            int to = Integer.parseInt(st.nextToken());
+            grid[from].add(to);
+            grid[to].add(from);
+        }
 
-		for (int i = 0; i <= n; i++) {
-			grid.add(new ArrayList<>());
-		}
-		
-		for (int i = 1; i < m+1; i++) {
-			int a = sc.nextInt();
-			int b = sc.nextInt();
-			grid.get(a).add(b);
-			grid.get(b).add(a);
-		}
-//		System.out.println(grid);
-		dfs(1);
-		
-		int cnt = 0;
-		for(int i = 0; i<visited.length;i++) {
-			if(visited[i]) {
-				cnt++;
-			}
-		}
-		System.out.println(cnt-1);
-		
-	}
-	static List<List<Integer>> grid;
-	static boolean[] visited;
-
-	private static void dfs(int v) {
-		
-		visited[v] = true;
-		
-//		System.out.print(v+" ");
-		
-		for(int i : grid.get(v)) {
-			if(!visited[i]) {
-				dfs(i);
-			}
-		}
-
-	}
+//        System.out.println(Arrays.toString(grid));
+        cnt = 0;
+        dfs(1);
+        if(cnt == 0){
+            System.out.println(0);
+            return;
+        }
+        System.out.println(cnt-1);
+    }
+    static int cnt;
+    static boolean[] visited;
+    static  List<Integer>[] grid;
+    private static void dfs(int start) {
+//        System.out.println(start);
+        for (int node:grid[start]){
+            if(!visited[node]){
+                visited[node] = true;
+                cnt++;
+                dfs(node);
+            }
+        }
+    }
 
 }
