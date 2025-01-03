@@ -1,59 +1,38 @@
 
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
+/**
+ * 설탕을 정확하게 N킬로그램 배달
+ * 봉지는 3, 5키로 봉지가 있음
+ * 최대한 적은 봉지로 들고가야함!
+ * 가장 최소 봉지 수는?
+ *
+ * 3x+5y = 18
+ * x가 0~6일때까지 계산
+ */
 public class Main {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-		Scanner sc = new Scanner(System.in);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());
+        int x3 = N / 3;
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i <= x3; i++) {
+            int kg5 = N - 3*i;
+            if(kg5%5==0){
+                int x5 = kg5 / 5;
+                ans = Math.min(ans, i+x5);
+            }
+        }
+        if(ans == Integer.MAX_VALUE){
+            System.out.println(-1);
+            return;
+        }
+        System.out.println(ans);
 
-		int n = sc.nextInt();
-
-		int a = 3;
-		int b = 5;
-
-		List<Integer> alist = new LinkedList<>();
-		List<Integer> blist = new LinkedList<>();
-
-		for (int i = 0; i <= n; i++) {
-			if (i % a == 0) {
-				alist.add(i);
-			}
-			if (i % b == 0) {
-				blist.add(i);
-			}
-		}
-
-//		System.out.println(alist);
-//		System.out.println(blist);
-
-		int ans = Integer.MAX_VALUE;
-		for (int i = 0; i < alist.size(); i++) {
-			int min = 0;
-			
-			int x = n - alist.get(i); 
-
-			int y1 = a; 
-			int y2 = b; 
-			if (y1 % a == 0 && x % b == 0) {
-				y1 = alist.get(i) / a;
-				y2 = x / b;
-				min = y1 + y2;
-			}
-			else {
-				min = Integer.MAX_VALUE;
-			}
-			ans = Math.min(ans, min);
-		}
-		
-		if( ans == Integer.MAX_VALUE) {
-			ans = -1;
-		}
-		
-		System.out.println(ans);
-
-	}
+    }
 }
