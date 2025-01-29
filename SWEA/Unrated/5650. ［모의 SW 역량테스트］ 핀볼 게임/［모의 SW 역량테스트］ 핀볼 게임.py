@@ -1,6 +1,8 @@
 T = int(input())
 for tc in range(T):
     '''
+    * 두번째 풀이
+    * 벽 또는 정사각을 만나면 무조건 되돌아가게 되있음. 점수 = 점수*2+1이됨
     1. 0인 곳에서 4가지 방향으로 모든 점수 계산
     2. 웜홀의 정보를 담는 배열 필요
     '''
@@ -38,12 +40,8 @@ for tc in range(T):
             # 벽 검사
             if (nextR < 0 or nextR >= n or nextC < 0 or nextC >= n):
                 # 벽에 부닥쳤음
-                ping += 1
-                # 위치는 원상복귀, 점수 획득, 위치는 반대
-                nextR = r
-                nextC = c
-
-                d = (d + 2) % 4
+                ping = ping* 2 +1
+                break
 
             # 블록 검사
             if (1 <= grid[nextR][nextC] <= 5):
@@ -55,7 +53,8 @@ for tc in range(T):
                     elif (grid[nextR][nextC] == 3):
                         d = 1
                     else:  # 나머지는 방향 180도 전환
-                        d = (d + 2) % 4
+                        ping = (ping-1)* 2 +1
+                        break
                 elif (d == 1):
                     # 1(좌)일때 1를 만나면 0이 되고 2을 만나면 2이됨
                     if (grid[nextR][nextC] == 1):
@@ -63,7 +62,8 @@ for tc in range(T):
                     elif (grid[nextR][nextC] == 2):
                         d = 2
                     else:  # 나머지는 방향 180도 전환
-                        d = (d + 2) % 4
+                        ping = (ping-1)* 2 +1
+                        break
                 elif (d == 2):
                     # 2(하)일때 1를 만나면 3이 되고 4을 만나면 1이됨
                     if (grid[nextR][nextC] == 1):
@@ -71,8 +71,8 @@ for tc in range(T):
                     elif (grid[nextR][nextC] == 4):
                         d = 1
                     else:  # 나머지는 방향 180도 전환
-                        d = (d + 2) % 4
-
+                        ping = (ping - 1) * 2 + 1
+                        break
                 elif (d == 3):
                     # 3(우)일때 4를 만나면 0이 되고 3을 만나면 3이됨
                     if (grid[nextR][nextC] == 4):
@@ -80,7 +80,8 @@ for tc in range(T):
                     elif (grid[nextR][nextC] == 3):
                         d = 2
                     else:  # 나머지는 방향 180도 전환
-                        d = (d + 2) % 4
+                        ping = (ping-1)* 2 +1
+                        break
 
             # 블랙홀 검사 : 게임 종료
             elif (grid[nextR][nextC] == -1):
