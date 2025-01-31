@@ -19,16 +19,22 @@ for tc in range(T):
     #     for j in range(n // 2 - (n - i) + 1, n // 2 + (n - i)):  # 1 2 3 #
     #         sum += grid[i][j]
     arr = []
-    idx = 0
-    for i in range(n):
-        if(i<n//2+1):
-            arr.append(i)
-        else:
-            arr.append(n-i-1)
+    # idx = 0
+    # for i in range(n):
+    #     if(i<n//2+1):
+    #         arr.append(i)
+    #     else:
+    #         arr.append(n-i-1)
+    #
+    # for i in range(n):
+    #     margin = arr[i]
+    #     for j in range(n//2 - margin, n//2+margin+1):
+    #         sum+=grid[i][j]
 
+    size = n//2
     for i in range(n):
-        margin = arr[i]
-        for j in range(n//2 - margin, n//2+margin+1):
-            sum+=grid[i][j]
+        for j in range(n):
+            if(abs(i-size)+abs(j-size)<=size):
+                sum+=grid[i][j]
 
     print(f"#{tc+1} {sum}")
