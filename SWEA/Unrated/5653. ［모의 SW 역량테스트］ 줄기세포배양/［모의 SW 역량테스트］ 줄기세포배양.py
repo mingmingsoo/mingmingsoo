@@ -16,16 +16,12 @@ class Node:
 T = int(input())
 for tc in range(T):
     '''
-    맵 크기를 어떻게 할 것인가?
-    k가 300 이므로 1000씩 하면 될 것 같고
-    가운데 위치로 잡기.
-
-    마지막 출력을 위해선 전체 배열을 탐색하는 로직이 필요하기는 함.
-    bfs에 들고다닐수는 없음
+    우선순위큐 대신 리스트로 정렬해서 푼 풀이.
+    시간복잡도 괜찮으면 이렇게 하는게 나을듯.
 
     '''
 
-    size = 1000
+    size = 700
     n, m, k = map(int, input().split())
     grid = [[0] * size for i in range(size)]
     startX = size // 2 - n // 2
@@ -42,7 +38,7 @@ for tc in range(T):
         for j in range(startY, endY):
             grid[i][j] = tmp[j - startY]
             if (grid[i][j] > 0):
-                heapq.heappush(q, Node(i, j, grid[i][j], 0))
+                q.append(Node(i, j, grid[i][j], 0))
                 # 위치, 생명력, 활성화되기전 시간, 활성화 되고나서 얼마나 지났는가
     row = [-1, 1, 0, 0]
     col = [0, 0, 1, -1]
@@ -52,15 +48,15 @@ for tc in range(T):
         if (limit >= k):
             break
         qSize = len(q)  # 5.5 -1 되는거 확인
-        newQ = []
+        q.sort()
         for s in range(qSize):
-            node = heapq.heappop(q)
+            node = q.pop(0)
             r = node.r
             c = node.c
             time = node.time
             curTime = node.cur
             if (curTime < time):
-                heapq.heappush(newQ, Node(r, c, time, curTime + 1))
+                q.append(Node(r, c, time, curTime + 1))
                 # 시간이 안지났으면 대기
             elif (curTime == time):  # 시간이 지났으면 확장 가능
                 dieQ.append(Node(r, c, time, 1))
@@ -71,11 +67,10 @@ for tc in range(T):
                     if (nr < 0 or nr >= size or nc < 0 or nc >= size):
                         continue
                     elif (grid[nr][nc] == 0):
-                        heapq.heappush(newQ, Node(nr, nc, time, 0))
+                        q.append(Node(nr, nc, time, 0))
                         grid[nr][nc] = time
                     elif (grid[nr][nc] == -1):
                         continue
-        q = newQ
         if dieQ:
             dieQsize = len(dieQ)
             for dieS in range(dieQsize):
