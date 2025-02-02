@@ -1,18 +1,22 @@
-T = int(input())
-for t in range(T):
-    ans = True
-    arr = list(input())
-    stack = []
-    for s in arr:
-        if (s == "("):
-            stack.append(s)
-        if (s == ")"):
-            if(len(stack) ==0):
-                ans = False
-                break
-            if (len(stack) != 0 and stack[len(stack) - 1] == '('):
-                stack.pop()
-    if(len(stack)==0 and ans == True):
-        print("YES")
-    else:
-        print("NO")
+n = int(input())
+
+
+def stack():
+    for nn in range(n):
+        ans = "YES"
+        stk = []
+        line = list(input())
+        for char in line:
+            if (char == "("):
+                stk.append(char)
+            else:
+                if (stk):
+                    stk.pop()
+                else:
+                    ans = "NO"
+                    break
+        if(stk):
+            ans = "NO"
+        print(ans)
+
+stack()
