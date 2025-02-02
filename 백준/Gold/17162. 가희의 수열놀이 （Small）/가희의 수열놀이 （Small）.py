@@ -1,5 +1,6 @@
 '''
-문제 시작 17:24
+아이디어 구상 못해서 준영님 코드 보고 알게됐음
+dict 써보기 -> 그냥 이차원배열로 해도 됐을듯....
 
 뒤에 넣거나
 뒤에 원소 제거
@@ -12,12 +13,13 @@
 3: 쿼리에 대한 계산
 
 -> 만족하지 못하면 -1 출력
--> 만족하면 최소 몇개의 수?
+-> 만족하면 최소 몇개의 수? (뒤에서 부터 새야됨!!!!! -> 이걸 고려안해서 틀렸음)
 
-mod 가 몇번째에 나왔는지 정보를 담는 dict 사용해서 최소값으로 갱신하고.
-길이를 찾을 때는 최댓값으로 갱신해야함.
+mod 가 몇번째에 나왔는지 정보를 담는 dict 사용
+길이를 찾을 때는 dict에 담긴 애들의 맨 뒤에애들을 사용해야함(뒤에서부터 샐거니까)
 '''
-
+import sys
+input = sys.stdin.readline
 Q, mod = map(int, input().split())
 infos = dict()
 arr = []
@@ -46,7 +48,8 @@ for q in range(Q):
                 print(-1)
                 isOk = False
                 break
-            eleMin = len(arr)-(infos[m][-1])+1 # 각각 mod의 최소값 중 최댓값을 출력
+            eleMin = len(arr)-(infos[m][-1])+1
+            # 각각 mod중 늦게나온 애들이 최소값이 될거임 = 뒤에서 부터 세서.
             minIdx = max(eleMin, minIdx)
         if(isOk):
             print(minIdx)
