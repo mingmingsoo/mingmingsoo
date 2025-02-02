@@ -1,64 +1,28 @@
-tmpking, tmpstone, T = input().split()
-
-tmpking = list(tmpking)
-tmpstone = list(tmpstone)
-
-kingC = ord(tmpking[0]) - 65
-kingR = int(tmpking[1]) -1
-
-stoneC = ord(tmpstone[0]) - 65
-stoneR = int(tmpstone[1]) -1
-
-
-for t in range(int(T)):
-
+'''
+dict 사용한 두번째 풀이
+열이 영어, 행이 숫자.
+'''
+orders = {"R": (0, 1), "L": (0, -1), "B": (-1, 0), "T": (1, 0), "RT": (1, 1), "LT": (1, -1), "RB": (-1, 1),
+          "LB": (-1, -1)}
+tmpK, tmpS, n = input().split()
+c, r, sc, sr, n = ord(tmpK[0]) - 65, int(tmpK[1]) - 1, ord(tmpS[0]) - 65, int(tmpS[1]) - 1, int(n)
+for _ in range(n):
     order = input()
-    nextR = kingR
-    nextC = kingC
-    if (order == "R"):
-        nextC += 1
-    elif (order == "L"):
-        nextC -= 1
-    elif (order == "B"):
-        nextR -= 1
-    elif (order == "T"):
-        nextR += 1
-    elif (order == "RT"):
-        nextR += 1
-        nextC += 1
-    elif (order == "LT"):
-        nextR += 1
-        nextC -= 1
-    elif (order == "RB"):
-        nextR -= 1
-        nextC += 1
-    elif (order == "LB"):
-        nextR -= 1
-        nextC -= 1
+    dir = orders[order]
+    nr = r + dir[0]
+    nc = c + dir[1]
 
-    rdis = nextR - kingR
-    cdis = nextC - kingC
-    isKingGo =False
-    isStoneGo = False
-    # 범위검사. 범위에 해당하면 이동.
-    if(0<=nextR<8 and 0<=nextC<8):
-        isKingGo = True
-        if(nextR == stoneR and nextC == stoneC):
-            isStoneGo = True
-    if(isStoneGo):
-        if not (0 <= stoneR + rdis < 8 and 0 <= stoneC + cdis < 8):
-            isKingGo = False
-            isStoneGo = False
-    if(isKingGo):
-        kingR = nextR
-        kingC = nextC
-        if(isStoneGo):
-           stoneR += rdis
-           stoneC += cdis
-
-
-print(chr(kingC+65), end= "")
-print(kingR+1)
-print(chr(stoneC+65), end = "")
-print(stoneR+1)
-
+    nsr = sr + dir[0]
+    nsc = sc + dir[1]
+    if (0 <= nr < 8 and 0 <= nc < 8):
+        if (nr == sr and nc == sc):
+            if (0 <= nsr < 8 and 0 <= nsc < 8):
+                r, c, sr, sc = nr, nc, nsr, nsc
+            else:
+                continue
+        else:
+            r, c = nr, nc
+    else:
+        continue
+print(f"{chr(c + 65)}{r + 1}")
+print(f"{chr(sc + 65)}{sr + 1}")
