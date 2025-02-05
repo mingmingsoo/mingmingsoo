@@ -4,25 +4,46 @@
 # 메모리: 75,196kb
 
 '''
-문제 시작 09:10
-문제 종료 10:00
-
-문제 설명
-가장 높은 봉우리에서 낮은 지형으로의 탐색
-가장 긴 등산로를 찾아야함
-딱 한번 k만큼 지형을 깎을 수 있음.
-
-1. 가장 높은 곳을 찾음. 여러개라 list에 담아주기.
-2. 높은 곳에서 dfs
-3. 깎았는지를 여부를 데리고 와야함. 즉 visited 해제가 필요
-4. 최대 갈 수 있는 거리이므로 다 깎으면 안되고 최소로 깎아야함
-
-* 생각해보니까 처음 위치로 돌아와서 더 깎아서 갈 수도 있는데 (숟가락 모양처럼)
-그래서 visited 초기 설정을 변경했음
+빠른 탈출 조건은 없음 완탐해야함
+벽 부수고 이동하기랑 다른 것.
+벽부수기는 벽을 부셨냐 안부셨냐만 따지면 되는데 -> 부서지기만 하면 다른 곳에서도 갈 수 있음
+이 문제는 어디서 왔냐에 따라서 높이가 달라지기 때문에 어디서 왔는지의 방문체크도 해야줘야함
 
 '''
+import copy
+from collections import deque
 
 T = int(input())
+
+
+def bfs():
+
+    while q:
+        global ans
+        r, c, cnt, bomb, hei, visited = q.popleft()  # 부모 높이를 담아줌
+        visited2 = copy.deepcopy(visited)
+        # print(visited,cnt,bomb)
+        ans = max(ans, cnt)
+
+        for k in range(4):
+            nr = r + row[k]
+            nc = c + col[k]
+            if (not (0 <= nr < n and 0 <= nc < n)):
+                continue
+            # 0이면 안부시고 갔음
+            # 부셨든 안부셨든 나보다 낮으면 가.
+            if (r * n + c, nr * n + nc) not in visited2 and grid[nr][nc] < hei:
+                visited2.add((r * n + c, nr * n + nc))
+                visited2.add((nr * n + nc, r * n + c))
+                q.append((nr, nc, cnt + 1, bomb, grid[nr][nc],visited2))
+
+            elif (r * n + c, nr * n + nc) not in visited2 and grid[nr][nc] - kk < hei and bomb:
+                visited2.add((r * n + c,nr * n + nc))
+                visited2.add((nr * n + nc, r * n + c))
+                q.append((nr, nc, cnt + 1, False, hei - 1,visited2))
+
+
+
 for tc in range(T):
 
     n, kk = map(int, input().split())  # 맵 크기와 깎을 수 있는 높이
@@ -34,43 +55,22 @@ for tc in range(T):
             grid[i] = tmp
             if (grid[i][j] > maxH):
                 maxH = grid[i][j]
-    high_list = []
-    for i in range(n):
-        for j in range(n):
-            if (grid[i][j] == maxH):
-                high_list.append((i, j))
-
-    # print(maxH, high_list)
-
     ans = 0
     row = [0, 1, -1, 0]
     col = [-1, 0, 0, 1]
 
-
-    def dfs(r, c, h, bomb, dist):
-        global ans
-        ans = max(ans, dist)
-
-        visited[r][c] = True
-
-        for k in range(4):
-            nr = r + row[k]
-            nc = c + col[k]
-            if (not (0 <= nr < n and 0 <= nc < n)):
-                continue
-
-            if (not visited[nr][nc] and grid[nr][nc] < h):  # 낮으면 조건 없이 갈 수 있음
-                dfs(nr, nc, grid[nr][nc], bomb, dist + 1)
-            elif (not visited[nr][nc] and grid[nr][nc] - kk < h and bomb):  # 깎아서 낮아질 수 있고 기회가 있다면
-                origin = grid[nr][nc]
-                grid[nr][nc] = grid[r][c] - 1  # 최소로만 깎기
-                dfs(nr, nc, grid[nr][nc], False, dist + 1)
-                grid[nr][nc] = origin
-
-        visited[r][c] = False
-
-    for sr, sc in high_list:
-        visited = [[False] * n for i in range(n)]  # 매 경우 탐색하므로 visited 매번 초기화 필요
-        dfs(sr, sc, maxH, True, 1)  # 위치, 최대높이, 깎을 수 있는지 여부, 현재까지의 거리
+    for i in range(n):
+        for j in range(n):
+            if (grid[i][j] == maxH):
+                q = deque()  # q에 바로담기
+                v = set()
+                for k in range(4):
+                    nr = i+row[k]
+                    nc = j+col[k]
+                    if(0<=nr<n and 0<=nc<n):
+                        v.add((nr*n+nc,i*n+j))
+                q.append((i, j, 1, True, maxH, v))
+                bfs()
+    # print(q)
 
     print(f"#{tc + 1} {ans}")
