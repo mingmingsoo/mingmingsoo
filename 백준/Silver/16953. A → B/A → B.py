@@ -1,28 +1,27 @@
 '''
-애초에 visited 가 필요가 없음.
-*2 는 모조건 홀수고
-1을 더하는 것은 무조건 전의 값들보다 커지기 때문
-중복될 수 가 없음.
+풀었던 문제
+최소값 출력이므로 bfs -> 도달 가능하면 return 후 종료
+숫자는 계속 커지기만 한다 -> visited가 필요하지 않다.
 
 '''
 from collections import deque
+
 start, end = map(int, input().split())
-
-q = deque([(start,1)])
 ans = -1
-while q:
-    cur, cnt = q.popleft()
-    if(cur==end):
-        ans = cnt
-        break
-    cur_add_1 = int(str(cur)+"1")
 
-    if(cur*2<=end):
-        q.append((cur*2, cnt+1))
-    if(cur_add_1<=end):
-        q.append((cur_add_1,cnt+1))
+def bfs(start, end):
+    global ans
+    q = deque([(start, 1)]) # 시작점과 숫자와 거리
+    while q:
+        cur, cnt = q.popleft()
+        if(cur == end):
+            ans = cnt
+            return
+        if(cur*2<=1000000000):
+            q.append((cur*2,cnt+1))
+        if (cur * 2 <= 1000000000):
+            q.append((cur*10+1,cnt+1))
+
+bfs(start, end)
 
 print(ans)
-
-
-
