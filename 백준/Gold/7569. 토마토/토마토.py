@@ -1,67 +1,73 @@
 '''
-하루마다 토마토들은 상하좌우, 위아래로 익어감
-1: 익은 토마토 - 얘를 기준으로 퍼져감
-0: 익지 않은 토마토
--1: 토마토 없음
+2차원 토마토와 동일하지만
+3차원이다.
 
-토마토가 모두 익지 못하면 -1 출력
 
-필요한 과정
-1. 익은 토마트들의 좌표를 q에 넣어줌
-2. bfs 시작. row col hei 을 사용해서 이동
-3. bfs 끝나고 grid가 0인데 vistied가 fasle이면 모두 익지 못한 상태 -1 출력
+로직은 비슷하게 bfs후에
+안익은토마토인데 방문한적이 없으면 안익은거라
+-1 출력이다..
+
+익은 토마토가 없을 떄 탐색을 안하고 바로 -1 출력하고 exit 해도 되는데 맘이 급해서 못했다.
+그 로직을 추가하겠음 !
 
 '''
 from collections import deque
 
-M,N,H = map(int, input().split())
-# 3차원 배열 생성
-grid = [[list(map(int, input().split())) for n in range(N)] for h in range(H)]
+M, N, H = map(int, input().split())
 
-# for height in range(H):
-#     print(grid[height])
-q = deque()
-visited = set()
-for h in range(H):
-    for i in range(N):
-        for j in range(M):
-            if grid[h][i][j] == 1:
-                q.append((h,i,j))
-                visited.add((h,i,j))
-# print(q)
-# print(visited)
+grid = [[list(map(int, input().split())) for i in range(N)] for _ in range(H)]
+# print(grid)
 
-hei = [1,-1,0,0,0,0]
-row = [0,0,1,-1,0,0]
-col = [0,0,0,0,1,-1]
+q = deque([])
 
-
-def isRange(dh, dr, dc):
-    if(0<=dh<H and 0<=dr<N and 0<=dc<M):
-        return True
-    return False
-
+row = [-1, 1, 0, 0, 0, 0]
+col = [0, 0, 1, -1, 0, 0]
+hei = [0, 0, 0, 0, 1, -1] # 높이도 만들어준다.
 ans = 0
-while q:
-    size = len(q)
-    for i in range(size):
-        h,r,c = q.popleft()
-        for d in range(6):
-            dh = h+hei[d]
-            dr = r+row[d]
-            dc = c+col[d]
+visited = [[[0] * M for i in range(N)] for _ in range(H)]
 
-            if(isRange(dh,dr,dc) and grid[dh][dr][dc]==0 and (dh,dr,dc) not in visited):
-                q.append((dh,dr,dc))
-                visited.add((dh,dr,dc))
-    ans += 1
-isTomato = True
-for h in range(H):
-    for i in range(N):
-        for j in range(M):
-            if(grid[h][i][j] == 0 and (h,i,j) not in visited):
-                isTomato = False
-if(isTomato == False):
-    print(-1)
-else:
-    print(ans-1)
+
+def bfs():
+    global ans
+    for h in range(H):
+        for i in range(N):
+            for j in range(M):
+                if (grid[h][i][j] == 1):  # 1이면 바로 q에 넣어준다.
+                    q.append((h, i, j, ans))
+                    visited[h][i][j] = True
+    if(not q):
+        print(-1)
+        exit()
+
+    while q:
+        h, r, c, day = q.popleft()
+        # print(h,r,c,day)
+        ans = max(day, ans)
+        for k in range(6):
+            nh = h + hei[k]
+            nr = r + row[k]
+            nc = c + col[k]
+
+            if (not (0 <= nr < N and 0 <= nc < M and 0 <= nh < H)):
+                continue
+
+            if (not visited[nh][nr][nc] and grid[nh][nr][nc] == 0):
+                q.append((nh, nr, nc, day + 1))
+                visited[nh][nr][nc] = True
+
+bfs()
+
+
+def valid():
+    for h in range(H):
+        for i in range(N):
+            for j in range(M):
+                if (grid[h][i][j] == 0 and not visited[h][i][j]):
+                    return False
+    return True
+
+
+if (not valid()):
+    ans = -1
+
+print(ans)
