@@ -6,13 +6,13 @@ while True:
         break
     arr = list(map(int, input().split()))
     size = max(arr)
-    # size = 40
-    adj = [[] for i in range(size + 1)]
-    myparent = 0
+
+    child_list = [[] for i in range(size + 1)] # 자식들을 담음
+    parent_list = [0] *(size + 1)  # 부모들을 담음
+
     i = 0
     visited = [False] * (size + 1)
-
-    # 트리 만들기. 이게 구현문제가 아닐까?
+    mother = 0
     while (i < n):
         parent = arr[i]
         visited[parent] = True
@@ -33,22 +33,27 @@ while True:
                 continue
             if (visited[arr[j]]):
                 continue
-            adj[parent].append(arr[j])
+            child_list[parent].append(arr[j])
+            parent_list[arr[j]]=parent
             if (arr[j] == m):
-                myparent = parent
+                mother = parent # 엄마
             visited[arr[j]] = True
         i += 1
-    cousin = 0
-    # 사촌 찾기
-    def findUncle():
-        global cousin
-        for node in adj:
-            if myparent in node:
-                for uncle in node:
-                    if (uncle == myparent):
-                        continue
-                    cousin += len(adj[uncle])
-                return
 
-    findUncle()
+
+    # 할머니.
+    grandmother = 0
+    if(not parent_list[mother]): # 알고보니 엄마가 외동.
+        print(0)
+        # exit()
+        continue
+    else:
+        grandmother = parent_list[mother] # 아니라면 할머니 누구야
+
+    # 할머니 손주들 수
+    cousin = 0
+    for child in child_list[grandmother]:
+        if(child != mother): # 우리 엄마 빼고 삼촌들
+            cousin += len(child_list[child]) # 자식수 몇명이야
+
     print(cousin)
