@@ -1,16 +1,24 @@
-n, m = map(int, input().split())
+import sys
+input = sys.stdin.readline
+
+
+n,m = map(int, input().split())
 grid = [list(map(int, input().split())) for i in range(n)]
 
-# 누적합 계산
+sum_grid = [[0]*(n+1) for i in range(n+1)]
+sum_grid[0][0] = grid[0][0]
 
-sumGrid = [[0] * (n + 1) for i in range(n + 1)]
-# 누적합 배열 생성
-for i in range(1, n + 1):
-    for j in range(1, n + 1):
-        sumGrid[i][j] = sumGrid[i - 1][j] + sumGrid[i][j - 1] - sumGrid[i - 1][j - 1] + grid[i - 1][j - 1]
-# for row in sumGrid:
-#     print(row)
 # 누적합 구하기
-for mm in range(m):
-    x1, y1, x2, y2 = map(int, input().split())
-    print(sumGrid[x2][y2] - sumGrid[x2][y1 - 1] - sumGrid[x1 - 1][y2] + sumGrid[x1 - 1][y1 - 1])
+for i in range(1,n):
+    sum_grid[i][0] = grid[i][0]+sum_grid[i-1][0]
+for j in range(1,n):
+    sum_grid[0][j] = grid[0][j]+sum_grid[0][j-1]
+for i in range(1,n):
+    for j in range(1,n):
+        sum_grid[i][j] = sum_grid[i-1][j] + sum_grid[i][j-1] - sum_grid[i-1][j-1]+grid[i][j]
+
+# 큰사각형 - 작은사각형1-작은사각형2 +겹치는 사각형
+for i in range(m):
+    x1,y1,x2,y2 = map(lambda x: int(x)-1, input().split())
+    ans = sum_grid[x2][y2] - sum_grid[x1-1][y2] - sum_grid[x2][y1-1] +sum_grid[x1-1][y1-1]
+    print(ans)
