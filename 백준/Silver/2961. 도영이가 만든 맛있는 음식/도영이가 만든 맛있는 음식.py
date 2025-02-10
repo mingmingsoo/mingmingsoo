@@ -1,11 +1,5 @@
 '''
-10분
-신 곱
-쓴 합
-
-신- 쓴 가장 적게
-
-부분집합......
+float-> 최댓값으로 변경
 '''
 
 n = int(input())
@@ -17,7 +11,7 @@ for i in range(n):
     A.append(a)
     B.append(b)
 
-ans = float("inf")
+ans = 1_000_000_000
 
 
 def subset(idx, a, b, cnt):
