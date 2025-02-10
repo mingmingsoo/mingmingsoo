@@ -1,31 +1,26 @@
 '''
 부분집합..
+5 0
+1 2 3 4 5
+이 때는 어떻게 처리해주지?
 '''
 
 n, target = map(int, input().split())
 arr = list(map(int, input().split()))
 
-sel = [0]*n
-empty = [0]*n
 ans = 0
 
-def subset(idx):
+def subset(idx, sm):
     global ans
     if(idx ==n):
-        if sel == empty:
-            return
-        ele_sum = 0
-        for i in range(n):
-            if(sel[i]==1):
-                ele_sum+=arr[i]
-        if(ele_sum==target):
+        if(sm==target):
             ans+=1
         return
 
-    sel[idx] = 1
-    subset(idx+1)
-    sel[idx] = 0
-    subset(idx+1)
+    subset(idx+1,sm+arr[idx])
+    subset(idx+1,sm)
 
-subset(0)
+if(target==0):
+    ans -=1
+subset(0,0) # idx, sum
 print(ans)
