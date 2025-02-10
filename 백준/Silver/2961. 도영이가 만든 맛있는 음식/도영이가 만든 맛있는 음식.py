@@ -1,5 +1,5 @@
 '''
-17
+10분
 신 곱
 쓴 합
 
@@ -16,28 +16,19 @@ for i in range(n):
     a, b = map(int, input().split())
     A.append(a)
     B.append(b)
-sel = [0]*n
-empty = [0]*n
+
 ans = float("inf")
-def subset(idx):
+
+
+def subset(idx, a, b, cnt):
     global ans
-    if(idx ==n):
-        if(sel == empty):
-            return
-        a = 1
-        b = 0
-        for i in range(n):
-            if(sel[i]==1):
-                a*=A[i]
-                b+=B[i]
-        diff = abs(a-b)
-        ans = min(ans, diff)
+    if (idx == n):
+        if (cnt > 0):
+            ans = min(ans, abs(b - a))
         return
+    subset(idx + 1, a * A[idx], b + B[idx], cnt + 1)
+    subset(idx + 1, a, b, cnt)
 
-    sel[idx] = 1
-    subset(idx+1)
-    sel[idx] = 0
-    subset(idx + 1)
 
-subset(0)
+subset(0, 1, 0, 0)  # idx,a,b,cnt
 print(ans)
