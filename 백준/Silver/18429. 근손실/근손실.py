@@ -13,24 +13,20 @@
 
 n,sad = map(int,input().split())
 arr = list(map(int, input().split()))
-sel = [0]*n
 visited = [False]*n
 cnt = 0
-def btk(idx):
+def btk(idx,muscle):
     global cnt
+    if(muscle<500):
+        return
     if(idx == n):
-        muscle = 500
-        for i in range(n):
-            muscle += sel[i]-sad
-            if(muscle<500):
-                return
-        cnt+=1
+        if(muscle>=500):
+            cnt+=1
         return
     for i in range(n):
         if not visited[i]:
             visited[i] = True
-            sel[idx] = arr[i]
-            btk(idx+1)
+            btk(idx+1,muscle-sad+arr[i])
             visited[i] = False
-btk(0)
+btk(0,500)
 print(cnt)
