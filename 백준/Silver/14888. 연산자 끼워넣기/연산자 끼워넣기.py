@@ -1,66 +1,41 @@
 '''
-문제 설명
-    연산자의 종류와 갯수가 주어질 때 구할 수 있는 값의 최대, 최소를 구해줘야 한다
-    * 연산자 우선순위는 무시할 수 있다.
-
-입력
-    n개의 수
-    수열
-    연산자의 갯수(+ - * %)
+굳이 순열로 생각하지말고
+백트래킹으로 해결하기.
 '''
 n = int(input())
 arr = list(map(int, input().split()))
+cal = list(map(int, input().split()))
+mini = 1000000000+1 # 헤헤 십억이구나
+maxi = -mini
 
-cal_tmp = list(map(int, input().split()))
-# 쓸 수 있는 연산자 리스트를 만들기
-# 0 +
-# 1 -
-# 2 *
-# 3 %
-cal_list = []
-for i in range(4):
-    while(cal_tmp[i]>0):
-        cal_list.append(i)
-        cal_tmp[i] -=1
-# print(cal_list) # 얘네들을 수열로!
 
-m = len(cal_list)
-visited = [False]*m
-sel = [0]*m
-ans_min = 1_000_000_001
-ans_max = -1_000_000_001
+def oper(before, idx, i):
+    if(i==0):
+        return before + arr[idx+1]
+    elif(i==1):
+        return before - arr[idx+1]
+    elif(i==2):
+        return before * arr[idx+1]
+    elif(i==3):
+        if(before<0 and arr[idx+1]>0):
+            before *= -1
+            mok = before//arr[idx+1]
+            return -mok
+        return before // arr[idx+1]
 
-def btk(idx):
-    global ans_min, ans_max
-    if(idx==m):
-        # 연산 시작
-        rlt = arr[0]
-        for i in range(m):
-            if(sel[i]==0):
-                rlt += arr[i+1]
-            elif (sel[i] == 1):
-                rlt -= arr[i+1]
-            elif (sel[i] == 2):
-                rlt *= arr[i+1]
-            elif (sel[i] == 3):
-                if(rlt<0 and arr[i+1]>0):
-                    rlt *= -1
-                    mok = rlt // arr[i + 1]
-                    rlt = -mok
-                else:
-                    rlt //= arr[i+1]
-        ans_min = min(rlt, ans_min)
-        ans_max = max(rlt, ans_max)
+def btk(idx, rlt):
+    global mini, maxi
+    if(idx == n-1):
+        mini = min(mini, rlt)
+        maxi = max(maxi, rlt)
         return
+    for i in range(len(cal)):
+        if(cal[i]<=0):
+            continue
+        cal[i] -=1
+        btk(idx+1, oper(rlt,idx,i))
+        cal[i]+=1
 
-    for i in range(m):
-        if not  visited[i]:
-            visited[i] = True
-            sel[idx] = cal_list[i]
-            btk(idx+1)
-            visited[i] = False
-
-btk(0)
-print(ans_max)
-print(ans_min)
-
+btk(0,arr[0])
+print(maxi)
+print(mini)
