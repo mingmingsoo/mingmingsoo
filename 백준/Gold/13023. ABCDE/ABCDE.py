@@ -11,9 +11,13 @@
     가능하면 1 불가능하면 0
 구상
    백트래킹으로 타타타탙타고들어가서
-   마지막애가 친구가 있기만 하면 된다. (첫 시작점이여도 됨)
+   마지막애가 친구가 있기만 하면 된다.
 
-앗 근데 친구가 더 많으면 안되는 것 같다... 첫 시작점이여도 안된다.
+틀린이유
+    길을 가다가 돌아오려면 visited False로 길을 다시 열어줘야하는데 길을 안열어줘서
+    가능해도 불가능하다고 출력함
+    
+
 '''
 from collections import deque
 import sys
@@ -34,7 +38,7 @@ def dfs(idx,cnt):
     for node in adj[idx]:
         if(not visited[node]):
             dfs(node,cnt+1)
-    visited[idx] = False
+    visited[idx] = False # 이거 추가!
 for i in range(V):
     cnt = 0
     visited = [False] * V
