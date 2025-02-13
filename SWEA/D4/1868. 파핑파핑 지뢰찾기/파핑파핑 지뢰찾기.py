@@ -2,15 +2,14 @@ from collections import deque
 
 
 def count_pang(r, c):  # 주변에 몇개의 지뢰가 있는지 세주는 함수
-    pang = 0
     for k in range(8):
         nr = r + row[k]
         nc = c + col[k]
         if (not (0 <= nr < n and 0 <= nc < n)):
             continue
         if (grid[nr][nc] == "*"):
-            pang += 1
-    return pang
+            return False
+    return True
 
 
 def bfs(i, j):
@@ -23,7 +22,7 @@ def bfs(i, j):
             nc = c + col[k]
             if (not (0 <= nr < n and 0 <= nc < n)):
                 continue
-            elif (grid[nr][nc]=="." and count_pang(nr, nc)==0 and not visited[nr][nc]):
+            elif (grid[nr][nc]=="." and count_pang(nr,nc) and not visited[nr][nc]):
                 visited[nr][nc] = True
                 q.append((nr,nc))
             else:
@@ -42,7 +41,7 @@ for tc in range(T):
     visited = [[False]*n for i in range(n)]
     for i in range(n):
         for j in range(n):
-            if grid[i][j] =="." and count_pang(i, j)==0 and not visited[i][j]:
+            if grid[i][j] =="." and count_pang(i, j) and not visited[i][j]:
                 visited[i][j] = True
                 bfs(i, j)
                 ans += 1
