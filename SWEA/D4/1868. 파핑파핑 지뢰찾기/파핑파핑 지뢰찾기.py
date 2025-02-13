@@ -1,12 +1,3 @@
-'''
-[문제 설명]
-    어떤 칸을 클릭했을 때 지뢰가 있는 칸을 제외한 모든 칸들의 숫자가 표시되려면 최소 몇번 클릭해야하는가?
-[구상]
-    1. 먼저 지뢰가 아닌 곳에 근방에 지뢰가 몇개 있는지 담는 배열을 만든다.(지뢰면 -1)
-    2. 근데 무조건 0먼저 눌러야 장땡아닌가?
-    3. 그래서 무조건 0먼저 누르게 하겠다.
-    4. bfs로 풀겠다
-'''
 from collections import deque
 
 
@@ -32,11 +23,11 @@ def bfs(i, j):
             nc = c + col[k]
             if (not (0 <= nr < n and 0 <= nc < n)):
                 continue
-            if (grid[nr][nc]=="." and info[nr][nc] != 0 and not visited[nr][nc]):
-                visited[nr][nc] = True
-            elif (grid[nr][nc]=="." and info[nr][nc] == 0 and not visited[nr][nc]):
+            elif (grid[nr][nc]=="." and count_pang(nr, nc)==0 and not visited[nr][nc]):
                 visited[nr][nc] = True
                 q.append((nr,nc))
+            else:
+                visited[nr][nc] = True
 
 T = int(input())
 for tc in range(T):
@@ -48,16 +39,11 @@ for tc in range(T):
     col = [0, 0, 1, -1, 1, -1, 1, -1]
 
     ans = 0
-    for i in range(n):
-        for j in range(n):
-            if grid[i][j] =="." and count_pang(i, j)==0:
-                info[i][j] = 0
-
     visited = [[False]*n for i in range(n)]
     for i in range(n):
         for j in range(n):
-            if (info[i][j] == 0 and not visited[i][j]):  # 0인 애들만 담는다.
-                visited[i][j]=True
+            if grid[i][j] =="." and count_pang(i, j)==0 and not visited[i][j]:
+                visited[i][j] = True
                 bfs(i, j)
                 ans += 1
 
