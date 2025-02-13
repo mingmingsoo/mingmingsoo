@@ -1,3 +1,11 @@
+'''
+[문제 설명]
+    어떤 칸을 클릭했을 때 지뢰가 있는 칸을 제외한 모든 칸들의 숫자가 표시되려면 최소 몇번 클릭해야하는가?
+[구상]
+    1. 먼저 지뢰가 아닌 곳에 근방에 지뢰가 몇개 있는지 담는 배열을 만든다.(지뢰면 -1)
+    2. 근데 무조건 0먼저 눌러야 장땡아닌가?
+    3. 그래서 무조건 0먼저 누르게 하겠다.
+'''
 def count_pang(r, c): # 주변에 몇개의 지뢰가 있는지 세주는 함수
     pang = 0
     for k in range(8):
@@ -8,12 +16,7 @@ def count_pang(r, c): # 주변에 몇개의 지뢰가 있는지 세주는 함수
         if (grid[nr][nc] == "*"):
             pang += 1
     return pang
-def all_pang(grid): # 모두 숫자가 됐는가?
-    for i in range(n):
-        for j in range(n):
-            if (grid[i][j] == "."):
-                return False
-    return True # 여기까지 왔으면 모두 지뢰 아니면 숫자로 변했다는 것을 의미
+
 def pangpang(r, c, pang, grid_copy):  # 팡팡.. 지뢰팡팡
     global visited_pang
 
@@ -32,32 +35,19 @@ def pangpang(r, c, pang, grid_copy):  # 팡팡.. 지뢰팡팡
                 visited_pang[nr][nc] = True
                 grid_copy[nr][nc] = info[nr][nc]
 
-def btk():
+def game():
     global ans
-
-    cnt = 0
+    cnt = 0 # 몇번 지뢰를 눌렀는지
     for r, c, pang in pang_list:
-        if (cnt > ans):
-            return
+
         if (grid[r][c] == "."):
             pangpang(r, c, pang, grid)
             cnt += 1
-        if (all_pang(grid)):
-            ans = min(ans, cnt)
-            return
-    return
+
+    return cnt
 
 T = int(input())
 for tc in range(T):
-    '''
-    [문제 설명]
-        어떤 칸을 클릭했을 때 지뢰가 있는 칸을 제외한 모든 칸들의 숫자가 표시되려면 최소 몇번 클릭해야하는가?
-    [구상]
-        1. 먼저 지뢰가 아닌 곳에 근방에 지뢰가 몇개 있는지 담는 배열을 만든다.(지뢰면 -1)
-        2. 근데 무조건 0먼저 눌러야 장땡아닌가?
-        3. 그래서 무조건 0먼저 누르게 하겠다.
-    '''
-    import copy
 
     n = int(input())
     grid = [list(input()) for i in range(n)]
@@ -77,5 +67,5 @@ for tc in range(T):
     ans = 300 * 300 + 1
 
     visited_pang = [[False] * n for i in range(n)]
-    btk()
+    ans = game()
     print(f"#{tc+1} {ans}")
