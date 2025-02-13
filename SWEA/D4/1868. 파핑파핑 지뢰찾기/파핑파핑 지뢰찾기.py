@@ -5,8 +5,12 @@
     1. 먼저 지뢰가 아닌 곳에 근방에 지뢰가 몇개 있는지 담는 배열을 만든다.(지뢰면 -1)
     2. 근데 무조건 0먼저 눌러야 장땡아닌가?
     3. 그래서 무조건 0먼저 누르게 하겠다.
+    4. bfs로 풀겠다
 '''
-def count_pang(r, c): # 주변에 몇개의 지뢰가 있는지 세주는 함수
+from collections import deque
+
+
+def count_pang(r, c):  # 주변에 몇개의 지뢰가 있는지 세주는 함수
     pang = 0
     for k in range(8):
         nr = r + row[k]
@@ -17,55 +21,50 @@ def count_pang(r, c): # 주변에 몇개의 지뢰가 있는지 세주는 함수
             pang += 1
     return pang
 
-def pangpang(r, c, pang, grid_copy):  # 팡팡.. 지뢰팡팡
-    global visited_pang
 
-    grid_copy[r][c] = pang
-    visited_pang[r][c] = True
-    if pang == 0: # 0이면 한번 더 타고들어가기
+def bfs(i, j):
+    q = deque([(i, j)])
+
+    while q:
+        r, c = q.popleft()
         for k in range(8):
             nr = r + row[k]
             nc = c + col[k]
             if (not (0 <= nr < n and 0 <= nc < n)):
                 continue
-            if (info[nr][nc] == 0 and not visited_pang[nr][nc]):
-                visited_pang[nr][nc] = True
-                pangpang(nr, nc, info[nr][nc], grid_copy)
-            else:
-                visited_pang[nr][nc] = True
-                grid_copy[nr][nc] = info[nr][nc]
-
-def game():
-    global ans
-    cnt = 0 # 몇번 지뢰를 눌렀는지
-    for r, c, pang in pang_list:
-
-        if (grid[r][c] == "."):
-            pangpang(r, c, pang, grid)
-            cnt += 1
-
-    return cnt
+            if (grid[nr][nc]=="." and info[nr][nc] != 0 and not visited[nr][nc]):
+                visited[nr][nc] = True
+            elif (grid[nr][nc]=="." and info[nr][nc] == 0 and not visited[nr][nc]):
+                visited[nr][nc] = True
+                q.append((nr,nc))
 
 T = int(input())
 for tc in range(T):
 
     n = int(input())
     grid = [list(input()) for i in range(n)]
-    info = [[0] * n for i in range(n)]
+    info = [[-1] * n for i in range(n)]
     row = [1, -1, 0, 0, 1, 1, -1, -1]
     col = [0, 0, 1, -1, 1, -1, 1, -1]
 
-    pang_list = []
+    ans = 0
     for i in range(n):
         for j in range(n):
-            if (grid[i][j] == "*"):
-                info[i][j] = -1
-            else:
-                info[i][j] = count_pang(i, j)
-                pang_list.append((i, j, info[i][j]))
-    pang_list.sort(key=lambda x: x[2])
-    ans = 300 * 300 + 1
+            if grid[i][j] =="." and count_pang(i, j)==0:
+                info[i][j] = 0
 
-    visited_pang = [[False] * n for i in range(n)]
-    ans = game()
-    print(f"#{tc+1} {ans}")
+    visited = [[False]*n for i in range(n)]
+    for i in range(n):
+        for j in range(n):
+            if (info[i][j] == 0 and not visited[i][j]):  # 0인 애들만 담는다.
+                visited[i][j]=True
+                bfs(i, j)
+                ans += 1
+
+    # info 가 -1이 아닌애들 세주기 (== 0에 의해 못터진 애들)
+    for i in range(n):
+        for j in range(n):
+            if grid[i][j]=="." and not visited[i][j]:
+                ans += 1
+
+    print(f"#{tc + 1} {ans}")
