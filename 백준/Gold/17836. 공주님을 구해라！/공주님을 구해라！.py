@@ -46,8 +46,8 @@ def bfs(sr, sc, er, ec):
             elif(grid[nr][nc] == 2 and not visited[have_knife][nr][nc]):
                 visited[have_knife][nr][nc] = True
                 q.append((nr, nc, cnt + 1, True,time+1))
-            elif (grid[nr][nc] == 1 and have_knife and not visited[1][nr][nc]):  # 벽인데 검이 있으면 갈 수 이썽
-                visited[1][nr][nc] = True
+            elif (grid[nr][nc] == 1 and have_knife and not visited[have_knife][nr][nc]):  # 벽인데 검이 있으면 갈 수 이썽
+                visited[have_knife][nr][nc] = True # have_knife 이게 1이 아니여도 되나 ?
                 q.append((nr, nc, cnt + 1, have_knife,time+1))
 
 
