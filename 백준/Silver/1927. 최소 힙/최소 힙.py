@@ -1,13 +1,14 @@
-import sys
 import heapq
-pq = []
-n = int(sys.stdin.readline())
+import sys
+input = sys.stdin.readline
+n = int(input())
+q = []
 for i in range(n):
-    num = int(sys.stdin.readline())
-    if(num!=0):
-        heapq.heappush(pq,num)
-    else:
-        if(len(pq)==0):
-            print(0)
-        else:
-            print(heapq.heappop(pq))
+   num = int(input())
+   if num != 0:
+       heapq.heappush(q,num)
+   else:
+       if not q:
+           print(0)
+       else:
+           print(heapq.heappop(q))
