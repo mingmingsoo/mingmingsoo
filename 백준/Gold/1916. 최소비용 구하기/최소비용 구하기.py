@@ -1,34 +1,32 @@
 '''
-방향 그래프가 주어질 때
-최소거리를 계산해라
+A->B의 최소 비용
+단방향
 '''
 import heapq
 
 V = int(input())
 E = int(input())
+
 adj = [[] for i in range(V+1)]
-
 for i in range(E):
-    s, e , w = map(int, input().split())
-    adj[s].append((w,e))
-start, end = map(int, input().split())
+    s,e,cost = map(int,input().split())
+    adj[s].append((cost,e))
 
-d = [100_000*1_000+1] *(V+1)
-d[start] = 0
+s,e = map(int, input().split())
+d = [100_000*100_000+1]*(V+1)
+d[s] = 0
 
-
-def dijk(start):
-    q = [(0,start)]
+def dijk(start, end):
+    q = []
+    heapq.heappush(q, (0,start))
     while q:
-        dist, cur = heapq.heappop(q)
-
-        if(dist > d[cur]):
+        cost, cur = heapq.heappop(q)
+        if(cost>d[cur]):
             continue
 
-        for next_dist, next in adj[cur]:
-            if(d[next] > dist+next_dist):
-                d[next] = dist+next_dist
-                heapq.heappush(q,(d[next], next))
-
-dijk(start)
-print(d[end])
+        for next_cost, next in adj[cur]:
+            if(d[next] > next_cost+cost):
+                d[next] = next_cost+cost
+                heapq.heappush(q, (next_cost+cost, next))
+dijk(s,e)
+print(d[e])
