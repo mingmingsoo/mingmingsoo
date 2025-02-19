@@ -6,6 +6,8 @@
 출력
     전체 간선 합 - 최소 간선 길이
 '''
+import sys
+input = sys.stdin.readline
 
 V = int(input())
 
@@ -56,7 +58,7 @@ for i in range(len(edges)):
 # parent 들이 다르다는 것
 idx = 0
 for i in range(1, V):
-    if(find(idx) != find(i)):
+    if(find(idx) != find(i)): # 대왕 부모를 비교!!!!!!!!!!!!!!!
         print(-1)
         break
 else:
