@@ -1,28 +1,31 @@
+'''
+다익스트라 문제(미세먼지와 동일)
+최단 가중치로 도착지까지 도달하기.
+
+'''
 T = int(input())
+row = [-1, 1, 0, 0]
+col = [0, 0, 1, -1]
 for tc in range(T):
-    '''
-    다익스트라
-    '''
     import heapq
 
     n = int(input())
 
     grid = [list(map(int, input())) for i in range(n)]
 
-    ans = 0
-    d = [[100001] * n for i in range(n)]
-
+    d = [[100001] * n for i in range(n)] # 큰값으로 채우기
 
     def dijk():
-        row = [-1, 1, 0, 0]
-        col = [0, 0, 1, -1]
         q = [(grid[0][0], 0, 0)]
         d[0][0] = grid[0][0]
 
         while q:
             cost, r, c = heapq.heappop(q)
 
-            if (cost > d[r][c]):
+            if r == n-1 and c == n-1: # 더 탐색할 필요가 없음
+                break
+
+            if (cost > d[r][c]): # 너가 온 길은 아까 내가 온 길보다 늦어 ! 넘어가 !
                 continue
 
             for k in range(4):
@@ -32,7 +35,7 @@ for tc in range(T):
                     continue
                 next_cost = grid[nr][nc]
 
-                if (d[nr][nc] > cost + next_cost):
+                if (d[nr][nc] > cost + next_cost): # 최소 경로 갱신
                     d[nr][nc] = cost + next_cost
                     heapq.heappush(q, (d[nr][nc], nr, nc))
 
