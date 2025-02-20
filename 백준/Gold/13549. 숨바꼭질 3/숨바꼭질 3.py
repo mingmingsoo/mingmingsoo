@@ -4,20 +4,21 @@ from collections import deque
 n,m = map(int, input().split())
 
 '''
-2와 동일하게 가되,
-n>m이면 그 차이만큼  출력하면 된다.
+예전에 풀었떤 방식이 틀리고
+기억이 안나서
+다익스트라로 다시 풀어보겠습니다.!!!!!!!!!
 '''
 size = 100_001
-d = [100_001] * 100_001
+d = [100_001] * 100_001 # 큰 값으로 설정
 def bfs():
 
-   d[n] = 0
+   d[n] = 0 # 초기값 설정
    q = []
    heapq.heappush(q,(0,n))
 
    while q:
        cost, cur = heapq.heappop(q)
-       if(cur ==m):
+       if(cur ==m): # 도달했으면 더 볼 필요가 없다.
            print(cost)
            return
 
