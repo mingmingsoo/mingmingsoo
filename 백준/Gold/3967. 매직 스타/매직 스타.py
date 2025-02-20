@@ -2,7 +2,9 @@
 백트래킹 하겠습니다.
 사전순이니까 .. 그냥 포문 돌면서
 발견하면 바로 탈출하면 될듯?
+
 -> 잘 안돼서 순열로 풀었습니다....
+-> 가지치기 추가했습니다.
 
 '''
 N = 5
@@ -68,10 +70,7 @@ def isok(sel_num,idx):
 
     grid = [_[:] for _ in grid_origin]
 
-
-
     return True
-
 
 def btk(idx):
 
@@ -87,15 +86,15 @@ def btk(idx):
             num = sel_num[i]
             grid[r][c] = num
 
-        if(isok(sel_num,idx)):
-            find = True
-            for i in range(N):
-                for j in range(M):
-                    if grid[i][j] >0:
-                        print(chr(grid[i][j] + 64), end="")
-                    else:
-                        print(".", end="")
-                print()
+
+        find = True
+        for i in range(N):
+            for j in range(M):
+                if grid[i][j] >0:
+                    print(chr(grid[i][j] + 64), end="")
+                else:
+                    print(".", end="")
+            print()
         return
 
     for i in range(n):
