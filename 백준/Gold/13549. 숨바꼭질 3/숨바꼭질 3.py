@@ -1,37 +1,41 @@
+import heapq
 from collections import deque
 
-start, end = map(int,input().split())
-isBfs = True
-ans = float("inf")
-if(start>end):
-    isBfs = False
-    ans = start - end
-if(isBfs):
+n,m = map(int, input().split())
 
-    visited = [[0]*3 for i in range(100001)]
-    visited[0][0]= 1
-    visited[0][1]= 1
-    visited[0][2]= 1
-    q = deque([(start,0)])
+'''
+2와 동일하게 가되,
+n>m이면 그 차이만큼  출력하면 된다.
+'''
+size = 100_001
+d = [100_001] * 100_001
+def bfs():
 
-    # print(q)
-    while q:
-        cur, time = q.popleft()
-        # print(cur, time)
-        if(cur == end):
-            ans = min(ans, time)
-            continue
-        if(time>=ans):
-            continue
-        if(cur >= end and time> ans):
-            continue
-        if(cur+1<=100000 and visited[cur+1][0] ==0):
-            visited[cur][0] = 1
-            q.append([cur+1, time+1])
-        if(cur-1>= 0 and visited[cur-1][1] ==0):
-            visited[cur][1] = 1
-            q.append([cur-1, time+1])
-        if(cur*2<=100000 and visited[cur*2][2] ==0):
-            visited[cur][2] = 1
-            q.append([cur*2, time])
-print(ans)
+   d[n] = 0
+   q = []
+   heapq.heappush(q,(0,n))
+
+   while q:
+       cost, cur = heapq.heappop(q)
+       if(cur ==m):
+           print(cost)
+           return
+
+       if (cost > d[cur]):continue
+
+
+       if cur-1>=0 and d[cur-1] > cost+1:
+           d[cur-1] = cost+1
+           heapq.heappush(q,(cost+1,cur-1))
+
+       if cur+1<size and d[cur+1] > cost+1:
+           d[cur+1] = cost+1
+           heapq.heappush(q,(cost+1,cur+1))
+
+       if cur*2<size and d[cur*2] > cost:
+           d[cur*2] = cost
+           heapq.heappush(q, (cost, cur*2))
+if(n>m):
+    print(n-m)
+else:
+    bfs()
