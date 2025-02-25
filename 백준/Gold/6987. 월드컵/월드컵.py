@@ -3,8 +3,9 @@
 -> 가지치기가 필요해보인다....
 
 구상
-    AB, AC, ..., EF의 경기 -> 3가지 경우의 수
+    AB, AC, ..., EF의 경기 -> 3가지 경우의 수를 모두 따져줘야함.
     행렬을 채우고, 오리지널과 비교한다.
+    순열이라 15! 이긴한데 가지치기해서... 매직스타처럼 가능한 경우만 가게끔 했습니다.
 '''
 
 game = []
@@ -19,7 +20,6 @@ for i in range(4):
             idx += 1
     game.append([_[:] for _ in tmp_grid])
 ans = []
-arr = [1, 2, 3]
 
 
 def isvalid(idx, sel, grid):
@@ -27,7 +27,7 @@ def isvalid(idx, sel, grid):
     ii = 0
     for i in range(6):
         for j in range(6):
-            if (ii >= idx and idx<15):
+            if (ii >= idx and idx < 15):
                 return True
             if i == j or i > j:
                 continue
@@ -50,8 +50,7 @@ def perm(idx, grid, sel):
     if (not isvalid(idx, sel, grid)):
         return
     if idx == 15:
-        if isvalid(idx, sel, grid):
-            find = True
+        find = True
         return
 
     for i in range(1, 4):
