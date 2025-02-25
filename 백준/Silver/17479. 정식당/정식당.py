@@ -42,8 +42,8 @@ def isOk():
         else:
             C_count += 1
     # print(A_price, B_price, C_count)
-        if(C_count>1):
-            return False
+    if(C_count>1):
+        return False
     if(A_price<20000 and B_price>0):
         return False
     if(A_price+B_price <50000 and C_count>0):
