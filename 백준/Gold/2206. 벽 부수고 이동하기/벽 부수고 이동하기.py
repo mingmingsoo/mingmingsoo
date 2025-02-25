@@ -1,55 +1,49 @@
 '''
-0: 이동가능
-1: 이동 불가능
-0,0 -> N-1, M-1로 이동
-벽을 부술 수 있는 기회는 1번.
+풀었던 문제
 
-bfs로 풀고 불리언 데리고 다니기.
+0이면 이동 가능
+1이면 불가능
 
-도착하지 못하면 -1 출력 : q가 안비면
+최단경로로 이동할 건데
+벽을 부수는 기회가 1번 있음.
+
+풀이
+bfs로 풀되 방문처리는 3차원 배열로. 한번 부숴진데는 다시 못부수게 하겠음
 '''
 from collections import deque
 
 n, m = map(int, input().split())
+grid = [list(map(int, input())) for i in range(n)]
+ans = -1
 
-grid = [[0]*m for i in range(n)]
-for i in range(n):
-    string = input()
-    for j in range(m):
-        grid[i][j] = int(string[j])
+def bfs():
+    q = deque([(0,0,1,True)]) # 위치와 거리, 벽 부실수 있는지
+    visited = [[[False]*m for i in range(n)] for i in range(2)]
+    visited[0][0][0] = True # 처음 온 곳은
+    visited[1][0][0] = True # 벽이 있지도 않지만 일단 방문 처뤼~
 
-# print(grid)
-
-
-def bfs(startR, startC, endR, endC):
     row = [-1,1,0,0]
     col = [0,0,1,-1]
-    q = deque([(startR,startC,0,True)])
-    # print(q)
-    visited = set([startR,startC,True]) # 벽 안부수고 이동.
 
     while q:
-        r,c,sum,isBomb = q.popleft()
-        if(r==endR and c == endC):
-            return sum
+        global ans
+        r,c,cnt,bomb = q.popleft()
+        if(r == n-1 and c== m-1):
+            ans = cnt
+            return
 
         for k in range(4):
             nr = r+row[k]
             nc = c+col[k]
+            if(not(0<=nr<n and 0<=nc<m)):
+                continue
+            # 갈 수 있으면 그냥가
+            if(grid[nr][nc]==0 and not visited[bomb][nr][nc]):
+                visited[bomb][nr][nc] = True
+                q.append((nr,nc,cnt+1,bomb))
+            elif(grid[nr][nc]==1 and not visited[1][nr][nc] and bomb):
+                visited[1][nr][nc] = True
+                q.append((nr,nc,cnt+1,False))
 
-            if 0<=nr<=n-1 and 0<=nc<=m-1 and grid[nr][nc] == 1 and (nr,nc,False) not in visited and isBomb:
-                visited.add((nr,nc,False))
-                q.append((nr,nc,sum+1,False))
-            if 0<=nr<=n-1 and 0<=nc<=m-1 and grid[nr][nc] == 0 and (nr,nc,isBomb) not in visited:
-                visited.add((nr,nc,isBomb))
-                q.append((nr,nc,sum+1,isBomb))
-
-
-    return -1
-
-
-ans = bfs(0,0,n-1,m-1)
-if(ans == -1):
-    print(-1)
-else:
-    print(ans+1)
+bfs()
+print(ans)
