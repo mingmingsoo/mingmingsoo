@@ -110,8 +110,8 @@ def bfs(ar, ac, br, bc):
                         br += 1
                     else:
                         ar += 1
-            if (ar, ac, br, bc, time + 1) not in visited:
-                visited.add((ar, ac, br, bc, time + 1))
+            if (ar, ac, br, bc) not in visited:
+                visited.add((ar, ac, br, bc))
                 q.append((ar, ac, br, bc, time + 1))
 
 
