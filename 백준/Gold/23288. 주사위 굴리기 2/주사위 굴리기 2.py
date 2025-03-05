@@ -1,6 +1,12 @@
 '''
 
 # 백준 23288 주사위 굴리기2 (코드트리 정육면체 한번 더 굴리기)
+# 다섯번째 풀이
+    아니 포기하지 않는다.
+    미리 bfs 돌려놓기
+# 네번째 풀이
+    갯수 * num으로 해보기
+    이래도 시간 안줄어들면 포기
 # 세반째 풀이
     그냥 int로 해보기
 # 두번째 풀이
@@ -11,14 +17,15 @@ from collections import deque
 
 
 def bfs(R, C, num):
-    ele_score = 0
+    ele = 0
     visited = [[False] * m for i in range(n)]
     visited[R][C] = True
     q = deque([(R, C, num)])
-
+    my_num = []
     while q:
         R, C, num = q.popleft()
-        ele_score += num
+        ele += 1
+        my_num.append((R, C))
 
         for k in range(4):
             nr = R + row[k]
@@ -28,7 +35,9 @@ def bfs(R, C, num):
             if not visited[nr][nc] and grid[nr][nc] == num:
                 visited[nr][nc] = True
                 q.append((nr, nc, num))
-    return ele_score
+
+    for R, C in my_num:
+        score_grid[R][C] = ele*num
 
 
 n, m, move_num = map(int, input().split())
@@ -39,6 +48,13 @@ u, d, f, b, l, r = 1, 6, 5, 2, 4, 3
 row = [0, 1, 0, -1]  # 동 남 서 북
 col = [1, 0, -1, 0]
 R, C, dir = 0, 0, 0  # 처음엔 동쪽
+
+score_grid = [[0] * m for i in range(n)]
+for i in range(n):
+    for j in range(m):
+        if score_grid[i][j] == 0:
+            bfs(i, j, grid[i][j])
+
 score = 0
 
 for move in range(move_num):
@@ -61,7 +77,7 @@ for move in range(move_num):
     elif dir == 3:  # 북
         u, d, f, b, l, r = f, b, d, u, l, r
 
-    score += bfs(R, C, grid[R][C])
+    score += score_grid[R][C]
 
     if d > grid[R][C]:
         dir = (dir + 1) % 4
