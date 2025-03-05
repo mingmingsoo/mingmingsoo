@@ -1,4 +1,6 @@
 '''
+
+
 문제설명
     T개 연산카드, 1 부터 2×109 이하의 자연수 자원 카드
     연산카드
@@ -12,16 +14,16 @@
 이 카드를 누가 가지고있냐임
 '''
 import sys
-from collections import deque, defaultdict
-
+from collections import deque
 input = sys.stdin.readline
+
 n, game_num = map(int, input().split())  # 사람 수, 게임횟수
 who_num = list(map(lambda x: int(x) - 1, input().split()))
 private_card = dict()
 id_list = deque()
 order_list = deque()
 have_aquare = [0] * n
-
+ans = []
 for game in range(game_num):
     tmp = list(input().split())
     id, order, card = -1, -1, -1
@@ -46,24 +48,26 @@ for game in range(game_num):
         if origin_card not in private_card:
             # 내가 가질 수 있으면
             private_card[origin_card] = who
-            print(origin_id)
+            ans.append(origin_id)
             have_aquare[who] = 0
         else:
-            print(origin_id)
+            ans.append(origin_id)
             have_aquare[who] = (origin_id, origin_card)
     else:
         if order == "next":
-            print(id)
+            ans.append(id)
             continue
         elif order == "acquire":
             # 즉 남의 공용공간에 없다면.
             if card not in private_card:
                 # 내가 가질 수 있으면
                 private_card[card] = who
-                print(id)
+                ans.append(id)
             else:
-                print(id)
+                ans.append(id)
                 have_aquare[who] = (id, card)
         else:
             private_card.pop(card)
-            print(id)
+            ans.append(id)
+for x in ans:
+    print(x)
