@@ -1,4 +1,6 @@
 '''
+# 여섯번째 풀이
+    위치담는 q 대신 lst 사용
 # 다섯번째 풀이
     만약 인구이동이 많다면(최대 이천번뿐이긴 하지만......)
     bfs호출 횟수가 많아질 것이라고 생각돼서
@@ -42,7 +44,7 @@ while True:
                 visited[i][j] = True
                 q = deque([(i, j)])
                 cnt = 0
-                location = deque()
+                location = []
                 summ = 0
                 while q:
                     r, c = q.popleft()
@@ -58,13 +60,12 @@ while True:
                         if small <= abs(grid[r][c] - grid[nr][nc]) <= big:
                             visited[nr][nc] = True
                             q.append((nr, nc))
+
+                ele_num = summ // cnt
                 if cnt > 1:
                     is_exit = False
-                ele_num = summ // cnt
-
-                while cnt > 1 and location:
-                    r, c = location.popleft()
-                    grid[r][c] = ele_num
+                    for r, c in location:
+                        grid[r][c] = ele_num
 
     if is_exit:
         break
