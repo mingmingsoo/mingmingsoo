@@ -1,4 +1,6 @@
 '''
+# 일곱번째 풀이
+    교수님 코드 참조, q 를 while에서 한번만 생성
 # 여섯번째 풀이
     위치담는 q 대신 lst 사용
 # 다섯번째 풀이
@@ -38,20 +40,18 @@ while True:
 
     visited = [[False] * n for i in range(n)]
     is_exit = True
+    q = deque()
     for i in range(n):
         for j in range(n):
             if not visited[i][j]:
+                q.append((i,j))
                 visited[i][j] = True
-                q = deque([(i, j)])
-                cnt = 0
                 location = []
                 summ = 0
                 while q:
                     r, c = q.popleft()
-
                     location.append((r, c))
                     summ += grid[r][c]
-                    cnt += 1
                     for k in range(4):
                         nr = r + row[k]
                         nc = c + col[k]
@@ -61,8 +61,8 @@ while True:
                             visited[nr][nc] = True
                             q.append((nr, nc))
 
-                ele_num = summ // cnt
-                if cnt > 1:
+                ele_num = summ // len(location)
+                if len(location) > 1:
                     is_exit = False
                     for r, c in location:
                         grid[r][c] = ele_num
