@@ -4,16 +4,13 @@ from collections import deque
 # print(4 * 4 * 4 * 4 * 4 * 5 * 4 * 3 * 2 * 1 * 4) # 491520
 # 회전시킨다.
 
-hyper = []
+hyper = [[list(map(int, input().split())) for i in range(5)] for h in range(5)]
 
-for w in range(5):
-    grid = [list(map(int, input().split())) for i in range(5)]
-    hyper.append(grid)
 
 h_list = []
 visited = [False] * 5
 sel = [0] * 5
-ans = 5 * 5 * 5 + 1
+ans = 126
 
 
 def perm(idx):
@@ -34,8 +31,11 @@ hei = [1, -1, 0, 0, 0, 0]
 row = [0, 0, 1, -1, 0, 0]
 col = [0, 0, 0, 0, 1, -1]
 
-
+find = False
 def bfs(h, r, c, eh, er, ec, hyper):
+    global find
+    if find:
+        return
     global ans
     visited = [[[False] * 5 for i in range(5)] for i in range(5)]
     visited[h][r][c] = True
@@ -48,6 +48,9 @@ def bfs(h, r, c, eh, er, ec, hyper):
             return
         if h == eh and c == ec and r == er:
             ans = min(ans, dist)
+            if ans == 12:
+                find = True
+                return
             return
         for k in range(6):
             nh = h + hei[k]
@@ -67,6 +70,9 @@ def rotate(hyper, idx, origin_hyper):
 
 
 def btk(idx):
+    global find
+    if find:
+        return
     if idx == 5:
         for h_arr in h_list:
             new_hyper = []
@@ -88,24 +94,31 @@ def btk(idx):
     # 회전 없이 간다.
     btk(idx + 1)
 
-    origin_hyper = [[ii[:] for ii in jj] for jj in hyper]
-    # for h in range(5):
-    #     for i in range(5):
-    #         for j in range(5):
-    #             origin_hyper[h][i][j] = hyper[h][i][j]
+    # origin_hyper = [[ii[:] for ii in jj] for jj in hyper]
+    origin_hyper = [[[0] * 5 for i in range(5)] for i in range(5)]
+    for h in range(5):
+        for i in range(5):
+            for j in range(5):
+                origin_hyper[h][i][j] = hyper[h][i][j]
 
     # 1번 회전
     rotate(hyper, idx, origin_hyper)
     btk(idx + 1)
 
     # 2번 회전
-    origin_hyper = [[ii[:] for ii in jj] for jj in hyper]
+    for h in range(5):
+        for i in range(5):
+            for j in range(5):
+                origin_hyper[h][i][j] = hyper[h][i][j]
     rotate(hyper, idx, origin_hyper)
 
     btk(idx + 1)
 
     # 3번 회전
-    origin_hyper = [[ii[:] for ii in jj] for jj in hyper]
+    for h in range(5):
+        for i in range(5):
+            for j in range(5):
+                origin_hyper[h][i][j] = hyper[h][i][j]
     rotate(hyper, idx, origin_hyper)
     btk(idx + 1)
 
