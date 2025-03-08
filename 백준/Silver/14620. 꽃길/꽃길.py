@@ -8,6 +8,11 @@
     일단 화단 가격 미리 계산한다
     그리고 범위 내에서 가능하면 꽃 피운다!
     btk
+틀린이유
+    ans = 200 * 5  + 1
+    이 아니라
+    ans = 200 * 5 * 3 + 1임!!
+    꽃 3개
 '''
 n = int(input())
 grid = [list(map(int, input().split())) for i in range(n)]
@@ -17,7 +22,7 @@ for i in range(1, n - 1):
         money[i][j] = grid[i][j] + grid[i - 1][j] + grid[i + 1][j] + grid[i][j - 1] + grid[i][j + 1]
 
 visited = [[False] * n for i in range(n)]
-ans = 200 * 5 * 3+1
+ans = 200 * 5 * 3 + 1
 
 
 def btk(idx, cost):
