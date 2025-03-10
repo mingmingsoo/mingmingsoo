@@ -1,104 +1,57 @@
 '''
-문제설명
-    토네이도가 중심점에서 0,0을 향해 회전한다.
-    이동하는 매 칸마다 모래가 흩뿌려진다.
-    이때 격자 밖으로 나가는 모래양의 합은?
-구상
-    성실히 구현.....
-    1. 일단 달팽이 구현 -> 중앙에서 들어가는게 어려워서 0,0에서 시작해서 중앙으로 가는 좌표 담기.
-    2. 그다음에 흩뿌려지는거 구현
-    3. 그다음에 회전 구현
+# 백준 20057 마법사 상어와 토네이도
+    1. 중앙 -> 0,0으로 가는 달팽이로 다시 풀어보기!!!!! 꼭!!!
 '''
+######################################################################
+# 두번째 풀이(코드최적화: 시간은 아니고 dict 사용)
 n = int(input())
 grid = [list(map(int, input().split())) for i in range(n)]
 
-r, c, d = 0, 0, 0
 location = []
 row = [0, 1, 0, -1]
-col = [1, 0, -1, 0]
-# 위 3 아래 1 왼 2 우 0
-dirs = [
-    [(-1, 1, -2, 2, 0, -1, 1, -1, 1, 0), (-1, -1, 0, 0, 2, 0, 0, 1, 1, 1)],
-    [(-1, -1, 0, 0, 2, 0, 0, 1, 1, 1), (-1, 1, -2, 2, 0, -1, 1, -1, 1, 0)],
-    [(-1, 1, -2, 2, 0, -1, 1, -1, 1, 0, 0), (1, 1, 0, 0, -2, 0, 0, -1, -1, -1, -1)],
-    [(1, 1, 0, 0, -2, 0, 0, -1, -1, -1), (-1, 1, -2, 2, 0, -1, 1, -1, 1, 0)]
-]
-
-visited = [[0] * n for i in range(n)]
-visited[0][0] = 1
-while r != n // 2 or c != n // 2:
-    if not (0 <= r + row[d] < n and 0 <= c + col[d] < n) or visited[r + row[d]][c + col[d]]:
-        d = (d + 1) % 4
+col = [-1, 0, 1, 0]
+dirs = {
+    2: [(-1, 1, -2, 2, 0, -1, 1, -1, 1, 0), (-1, -1, 0, 0, 2, 0, 0, 1, 1, 1)],  # 우
+    1: [(-1, -1, 0, 0, 2, 0, 0, 1, 1, 1), (-1, 1, -2, 2, 0, -1, 1, -1, 1, 0)],  # 아래
+    0: [(-1, 1, -2, 2, 0, -1, 1, -1, 1, 0, 0), (1, 1, 0, 0, -2, 0, 0, -1, -1, -1, -1)],  # 왼
+    3: [(1, 1, 0, 0, -2, 0, 0, -1, -1, -1), (-1, 1, -2, 2, 0, -1, 1, -1, 1, 0)]}  # 위
+munji_list = {1: (0, 1), 2: (2, 3), 5: (4,), 7: (5, 6), 10: (7, 8)}
+out = d = 0
+r = c = n // 2
+# 방향은 2번씩 바뀐다.
+cnt = 0 # 몇번?
+num = 1 # 처음엔 1씩임 ! 11223344..
+two = 0 # 얘네가 2번되면 num을 늘려줌
+while not (r == c == 0):
     nr = r + row[d]
     nc = c + col[d]
-    visited[nr][nc] = 1
-    r = nr
-    c = nc
-    location.append((r, c, (d + 2) % 4))
-# 위 3 아래 1 왼 2 우 0
-out = 0
-while location:
-    r, c, d = location.pop()
-    nr = r + row[d]
-    nc = c + col[d]
-    # nr,nc 근방으로
     origin_mungi = grid[nr][nc]
-    # 1%
-    # 11(01) 22(23) 5(4) 77(56) 10(78)
-    munji = origin_mungi * 1 // 100
-    for k in (0, 1):
-        nnr = nr + dirs[d][0][k]
-        nnc = nc + dirs[d][1][k]
-        if not (0 <= nnr < n and 0 <= nnc < n):
-            out += munji
-        else:
-            grid[nnr][nnc] += munji
-    # 2%
-    munji = origin_mungi * 2 // 100
-    for k in (2, 3):
-        nnr = nr + dirs[d][0][k]
-        nnc = nc + dirs[d][1][k]
-        if not (0 <= nnr < n and 0 <= nnc < n):
-            out += munji
-        else:
-            grid[nnr][nnc] += munji
-    # 5%
-    munji = origin_mungi * 5 // 100
-    for k in (4,):
-        nnr = nr + dirs[d][0][k]
-        nnc = nc + dirs[d][1][k]
-        if not (0 <= nnr < n and 0 <= nnc < n):
-            out += munji
-        else:
-            grid[nnr][nnc] += munji
-    # 7%
-    munji = origin_mungi * 7 // 100
-    for k in (5, 6):
-        nnr = nr + dirs[d][0][k]
-        nnc = nc + dirs[d][1][k]
-        if not (0 <= nnr < n and 0 <= nnc < n):
-            out += munji
-        else:
-            grid[nnr][nnc] += munji
-    # 10%
-    munji = origin_mungi * 10 // 100
-    for k in (7, 8):
-        nnr = nr + dirs[d][0][k]
-        nnc = nc + dirs[d][1][k]
-        if not (0 <= nnr < n and 0 <= nnc < n):
-            out += munji
-        else:
-            grid[nnr][nnc] += munji
-    # a
-    a = origin_mungi - (origin_mungi * 1 // 100) * 2 - (origin_mungi * 2 // 100) * 2 - \
-        (origin_mungi * 5 // 100) * 1 - (origin_mungi * 7 // 100) * 2 - (origin_mungi * 10 // 100) * 2
-
-    grid[nr][nc] = 0
+    a = origin_mungi
+    for m in (1, 2, 5, 7, 10):
+        munji = origin_mungi * m // 100
+        for k in munji_list[m]:
+            nnr = nr + dirs[d][0][k]
+            nnc = nc + dirs[d][1][k]
+            if not (0 <= nnr < n and 0 <= nnc < n):
+                out += munji
+                a -= munji
+            else:
+                grid[nnr][nnc] += munji
+                a -= munji
+    grid[nr][nc] = 0  # 이동했다.
     anr = nr + dirs[d][0][9]
     anc = nc + dirs[d][1][9]
     if not (0 <= anr < n and 0 <= anc < n):
         out += a
     else:
         grid[anr][anc] += a
-
+    cnt += 1
+    r, c = nr, nc
+    if cnt == num: # 방향 전환할 차례!
+        cnt = 0
+        two += 1
+        d = (d + 1) % 4
+    if two == 2: # num을 증가시켜주기
+        num += 1
+        two = 0
 print(out)
