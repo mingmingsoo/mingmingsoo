@@ -1,52 +1,14 @@
 '''
-문제설명
-    N*N 크기에 나무가 심어져 있음.
-    처음엔 모두 양분 5
-    M개의 나무
-    1. 봄에는 나이만큼 양분 먹고 나이 증가.
-        만약 한 칸에 나무가 여러개면
-        어린 나무부터 양분을 먹는다.
-        양분 못먹으면 양분이 죽는다
-    2. 여름에는 봄에 죽은 나무가 양분으로 변함
-        죽은 나무 나이 // 2가 양분에 추가
+시간초과 났던 이유 분석
+new_grid가 필요없음 어차피 1인애들은 번식이 안됨., remomve에서 pop으로 수정
+sort 빼버리고 insert 0하기
 
-    3. 가을에는 나무 번식.
-        나이가 5의 배수일때만 가능
-        인접8칸에 나이가 1인애들 생김
-    4. 겨울엔 양분 추가.
-구상
-    class로 나무 관리. 속성: 나이,살았는지 죽었는지.
-    시뮬레이션임
+1.sort가 없든
+2. die_idx를 기록하든 둘중에 하는 해야 시간초과 안난다
 
-10 10 1000
-2 3 2 3 2 2 3 2 3 2
-2 3 2 3 2 2 3 2 3 2
-2 3 2 3 2 2 3 2 3 2
-2 3 2 3 2 2 3 2 3 2
-2 3 2 3 2 2 3 2 3 2
-2 3 2 3 2 2 3 2 3 2
-2 3 2 3 2 2 3 2 3 2
-2 3 2 3 2 2 3 2 3 2
-2 3 2 3 2 2 3 2 3 2
-2 3 2 3 2 2 3 2 3 2
-1 2 3
-1 3 3
-1 4 3
-1 5 3
-1 6 3
-3 1 3
-3 2 3
-3 3 3
-3 4 3
-3 5 3
 
-1 3 1
-1
-1 1 7
-1 1 6
-1 1 5
-
-정답 1
+## 실험
+죽은애들을 pop 하지말고 슬라이싱 해보기
 '''
 
 n, m, limit = map(int, input().split())
@@ -67,7 +29,6 @@ for time in range(limit):
     #         만약 한 칸에 나무가 여러개면
     #         어린 나무부터 양분을 먹는다.
     #         양분 못먹으면 양분이 죽는다
-
     # 나이순 정렬.
     for i in range(n):
         for j in range(n):
@@ -86,14 +47,15 @@ for time in range(limit):
                     else:
                         die_idx = w
                         break
-                # 죽은애들 없애주면서 양분 추가하기
                 if die_idx != -1:
-                    for w in range(len(grid[i][j]) - 1, die_idx - 1, -1):
+                    for w in range(die_idx, len(grid[i][j])):
                         nutrition[i][j] += grid[i][j][w] // 2
-                        grid[i][j].pop(w)
+                    # 죽은애들 제외
+                    grid[i][j] = grid[i][j][:die_idx]
 
     for i in range(n):
         for j in range(n):
+            nutrition[i][j] += fill[i][j]
             if grid[i][j]:
                 for tree in grid[i][j]:
                     if tree % 5 == 0:
@@ -103,11 +65,6 @@ for time in range(limit):
                             if not (0 <= nr < n and 0 <= nc < n):
                                 continue
                             grid[nr][nc].append(1)
-
-    #     4. 겨울엔 양분 추가.
-    for i in range(n):
-        for j in range(n):
-            nutrition[i][j] += fill[i][j]
 
 ans = 0
 for i in range(n):
