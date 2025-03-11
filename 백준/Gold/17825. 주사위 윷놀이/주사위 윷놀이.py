@@ -1,4 +1,24 @@
 '''
+틀린이유
+    .... 가려는 위치에 말이 있으면 말이 대기하는 건 줄 알았ㅇㅁ..............
+    .....ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+    ㅜㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+    ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+    ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+
+문제설명
+    4개의 말이 있을 때 받을 수 있는 최대 점수는?
+
+구상
+    1,2,3,4 중복순열
+
+반례
+5 5 5 5 5 5 5 5 5 5
+정답 130
+
+
+'''
+'''
 문제설명
     4개의 말이 있을 때 받을 수 있는 최대 점수는?
 구상
@@ -25,11 +45,12 @@ def perm(idx):
         ele_score = 0
         state = [(0, -1) for i in range(4)]
         for i in range(10):
+            if (10 - i) * 40 + ele_score < ans:
+                return
             horse = sel[i] - 1
             dice = cube[i]
             if (state[horse][0], state[horse][1]) == (-1, -1):
                 return
-
             nr, nc = state[horse][0], state[horse][1] + dice
 
             if (nr, nc) == (0, 4):  # 10
@@ -51,16 +72,14 @@ def perm(idx):
                 state[horse] = (-1, -1)
                 continue
 
-            go = True
             for j in range(4):
                 if j == horse:
                     continue
                 hr, hc = state[j]
                 if (hr, hc) == (nr, nc):
                     return
-            if go:
-                state[horse] = (nr, nc)
-                ele_score += score[nr][nc]
+            state[horse] = (nr, nc)
+            ele_score += score[nr][nc]
         ans = max(ans, ele_score)
         return
     for i in range(1, 5):
