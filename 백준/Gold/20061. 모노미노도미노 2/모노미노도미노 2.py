@@ -1,38 +1,11 @@
 '''
-디버깅용 테케
-5
-3 2 0
-3 1 0
-3 2 0
-3 1 0
-2 2 0
-
-5
-2 0 0
-2 0 1
-2 0 0
-2 0 1
-3 0 1
-
-5
-3 0 0
-3 0 1
-3 0 2
-3 0 0
-3 0 3
-
-5
-2 0 0
-2 1 0
-2 2 0
-2 0 0
-2 3 0
+4차 제출 왜틀렸는지 분석하기 위한 코드
 '''
-
 n = 10
 grid = [[0] * n for i in range(n)]
 block_num = int(input())
 score = 0
+
 
 def location(r, c, shape):
     if shape == 1:  # 하나짜리
@@ -60,7 +33,7 @@ def location(r, c, shape):
         grid[nr][c], grid[nr][c + 1] = 1, 1
         # 파랑
         nc = n - 1
-        for j in range(c, n):
+        for j in range(c + 1, n):
             if grid[r][j] == 1:
                 nc = j - 1
                 break
@@ -69,7 +42,7 @@ def location(r, c, shape):
     elif shape == 3:  # 세로 두개
         # 초록
         nr = n - 1
-        for i in range(r, n):
+        for i in range(r + 1, n):
             if grid[i][c] == 1:
                 nr = i - 1
                 break
@@ -85,12 +58,16 @@ def location(r, c, shape):
 
 def delete():
     global score, green_line, blue_line
-    for i in range(n - 1, 5, -1):
+    # 초록 검사
+    # print("---------before 한줄검사---------", block)
+    # for _ in grid:
+    #     print("".join(map(str, _)))
+    for i in range(n - 1, -1, -1):
         if grid[i][:4].count(1) == 4:
             green_line += 1
             grid[i][:4] = [0, 0, 0, 0]
 
-    for j in range(n - 1, 5, -1):
+    for j in range(n - 1, -1, -1):
         cnt = 0
         for i in range(4):
             if grid[i][j] == 1:
@@ -102,8 +79,15 @@ def delete():
 
     score += green_line
     score += blue_line
+    # print("---------after 한줄검사---------", block)
+    # for _ in grid:
+    #     print("".join(map(str, _)))
+
 
 def special():
+    # print("---------before 스페셜---------", block)
+    # for _ in grid:
+    #     print("".join(map(str, _)))
     green_special = 0
     for i in (4, 5):
         if grid[i][:4].count(1) > 0:
@@ -130,10 +114,14 @@ def special():
         for i in range(4):
             grid[i][j] = 0
 
+    # 땡겨줌
     for w in range(blue_special):
         for j in range(n - 1, 0, -1):
             for i in range(4):
                 grid[i][j], grid[i][j - 1] = grid[i][j - 1], grid[i][j]  # 땡겨준다.
+    # print("---------after 스페셜---------", block)
+    # for _ in grid:
+    #     print("".join(map(str, _)))
 
 
 def fall():
@@ -154,13 +142,20 @@ def fall():
 
 
 for block in range(block_num):
+    # print("---------before---------", block)
+    # for _ in grid:
+    #     print("".join(map(str, _)))
     green_line=0
     blue_line = 0
     shape, r, c = map(int, input().split())
     location(r, c, shape)
-    delete()
-    fall()
-    special()
+    delete()  # 이 안에 fall
+    fall()  # 떨어지는 과정
+    special()  # special_fall
+    
+    # print("---------after---------", block)
+    # for _ in grid:
+    #     print("".join(map(str, _)))
 
 print(score)
 total = 0
