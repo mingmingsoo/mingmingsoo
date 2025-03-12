@@ -1,29 +1,38 @@
 '''
-문제설명
-    블록의 정보를 줄 때 구현해라.
-입력
-    블록갯수
-    블록정보, 어디에 놓을지
-출력
-    블록을 모두 놓았을 때 얻은 점수
-    파/초에 들어있는 타일의 갯수
-구상
-    시뮬레이션..
-주의할점
-    밑에가 없을 떄까지 떨어지는게 아님(맨 밑 그림)
-    점수는 한 줄이 모두 없어질때
-필요한 변수
-    location() 해당하는 위치로 옮겨줌
-    delete() 한 줄이 없어질 수 잇는지 -> 갯수세서 그만큼만 땡겨주기
-    fall()
-    special() 스페셜 공간에 놓아졌는지
-    special_fall()
+디버깅용 테케
+5
+3 2 0
+3 1 0
+3 2 0
+3 1 0
+2 2 0
+
+5
+2 0 0
+2 0 1
+2 0 0
+2 0 1
+3 0 1
+
+5
+3 0 0
+3 0 1
+3 0 2
+3 0 0
+3 0 3
+
+5
+2 0 0
+2 1 0
+2 2 0
+2 0 0
+2 3 0
 '''
+
 n = 10
 grid = [[0] * n for i in range(n)]
 block_num = int(input())
 score = 0
-
 
 def location(r, c, shape):
     if shape == 1:  # 하나짜리
@@ -76,10 +85,6 @@ def location(r, c, shape):
 
 def delete():
     global score, green_line, blue_line
-    # 초록 검사
-    # print("---------before 한줄검사---------", block)
-    # for _ in grid:
-    #     print("".join(map(str, _)))
     for i in range(n - 1, 5, -1):
         if grid[i][:4].count(1) == 4:
             green_line += 1
@@ -97,15 +102,8 @@ def delete():
 
     score += green_line
     score += blue_line
-    # print("---------after 한줄검사---------", block)
-    # for _ in grid:
-    #     print("".join(map(str, _)))
-
 
 def special():
-    # print("---------before 스페셜---------", block)
-    # for _ in grid:
-    #     print("".join(map(str, _)))
     green_special = 0
     for i in (4, 5):
         if grid[i][:4].count(1) > 0:
@@ -132,14 +130,10 @@ def special():
         for i in range(4):
             grid[i][j] = 0
 
-    # 땡겨줌
     for w in range(blue_special):
         for j in range(n - 1, 0, -1):
             for i in range(4):
                 grid[i][j], grid[i][j - 1] = grid[i][j - 1], grid[i][j]  # 땡겨준다.
-    # print("---------after 스페셜---------", block)
-    # for _ in grid:
-    #     print("".join(map(str, _)))
 
 
 def fall():
@@ -160,9 +154,6 @@ def fall():
 
 
 for block in range(block_num):
-    # print("---------before---------", block)
-    # for _ in grid:
-    #     print("".join(map(str, _)))
     green_line=0
     blue_line = 0
     shape, r, c = map(int, input().split())
@@ -170,9 +161,6 @@ for block in range(block_num):
     delete()
     fall()
     special()
-    # print("---------after---------", block)
-    # for _ in grid:
-    #     print("".join(map(str, _)))
 
 print(score)
 total = 0
