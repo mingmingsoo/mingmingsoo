@@ -30,33 +30,17 @@
 '''
 from collections import deque
 
-score = 0
-n, m = map(int, input().split())
-grid = [list(map(int, input().split())) for i in range(n)]
-row = [-1, 1, 0, 0]
-col = [0, 0, 1, -1]
-
 
 def bfs(r, c, num):
-    # ele_maxi, ele_r, ele_c 이거 리턴해줘야함
-    # 총 블록 수, 기준점 r,c
-    # 2. 블록 그룹이 존재한다
-    #     - 일반블록이 적어도 1개이고 그 일반블록은 색이 모두 같아야함 -> 이건 그런애들만 담을거라 ㄱㅊ
-    #     - 검은블록 포함하면 안됨
-    #     - 무지개는 얼마나 들어있든 상관 없음
-    #     - 블록은 2보다 크거나 같음 ㅇㅋㅇㅋ
-    #     - 이 블록의 기준블록은 일반블록 중에서 행과 열이 가장 작은 것임 -> return 으로
-    mujigae = 0
     q = deque([(r, c)])  # 0인애들 visited 처리 안한다.
-    location = []
-    center = []
-    zero_visited = set()
+    location, center, zero_visited = [], [], set()
+    mujigae = 0
     while q:
         r, c = q.popleft()
+        location.append((r, c))
         if grid[r][c] == 0:
             mujigae += 1
-        location.append((r, c))
-        if grid[r][c] != 0:
+        else:
             center.append((r, c))
         for k in range(4):
             nr = r + row[k]
@@ -67,16 +51,14 @@ def bfs(r, c, num):
                 visited[nr][nc] = True
                 q.append((nr, nc))
             if grid[nr][nc] == 0 and (nr, nc) not in zero_visited:
-                zero_visited.add((nr,nc))
+                zero_visited.add((nr, nc))
                 q.append((nr, nc))
 
     if len(location) <= 1:
         return -1, -1, -1, -1, []
     else:
         center.sort()
-        center_r = center[0][0]
-        center_c = center[0][1]
-        return len(location), mujigae, center_r, center_c, location
+        return len(location), mujigae, center[0][0], center[0][1], location
 
 
 def delete(location):
@@ -115,6 +97,12 @@ def rotation():
             grid[i][j] = copy_grid[j][n - i - 1]
 
 
+score = 0
+n, m = map(int, input().split())
+grid = [list(map(int, input().split())) for i in range(n)]
+row = [-1, 1, 0, 0]
+col = [0, 0, 1, -1]
+
 while True:
     visited = [[False] * n for i in range(n)]
     max_block = []
@@ -122,7 +110,6 @@ while True:
         for j in range(n):
             if 0 < grid[i][j] < 6 and not visited[i][j]:
                 visited[i][j] = True
-                # 무지개 즉 0블록의 갯수를 세줘야함.
                 ele_maxi, ele_mujigae, ele_r, ele_c, ele_location = bfs(i, j, grid[i][j])
                 if ele_maxi != -1:
                     max_block.append((ele_maxi, ele_mujigae, ele_r, ele_c, ele_location))
@@ -131,18 +118,8 @@ while True:
     max_block.sort(reverse=True)
     maxi, muji, r, c, location = max_block[0]
     score += maxi * maxi
-
-    # print("----삭제 후----")
-
-    delete(location)  # 이때 F로 표시
-    # myprint()
-    # print("----1. 떨어진 후----")
+    delete(location)  # 이때 9로 표시
     fall()  # 떨굼
-    # myprint()
-    # print("----2. 회전 후----")
     rotation()  # 회전
-    # myprint()
-    # print("----3. 떨군  후----")
     fall()  # 떨굼
-    # myprint()
 print(score)
