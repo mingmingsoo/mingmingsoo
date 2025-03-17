@@ -37,7 +37,7 @@ while True:
     priority_list.sort(key=lambda x: (-x[0], x[1]))
     ele_eat, d = priority_list[0]
     eat += ele_eat
-    path.append(d)
+    path.append("UDLR"[d])
     if d == 0:  # up이였냐?
         for j in range(c, c + y):
             grid[r - 1][j] = 0
@@ -57,5 +57,5 @@ while True:
             grid[i][c + y] = 0
         y += 1
 print(eat)
-for d in path:
-    print("UDLR"[d], end="")
+print("".join(path))
+
