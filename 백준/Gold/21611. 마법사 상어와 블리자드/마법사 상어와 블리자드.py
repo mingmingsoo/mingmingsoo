@@ -1,19 +1,5 @@
 '''
-문제 설명
-    1. 공격 - 얘는 쉬움
-    2. 댕기기 while 필요
-    3. 구슬 폭발
-            while
-                발견(4개이상) - 폭발
-                (발견 못했으면 break)
-                댕겨
-    4. 순서대로 배열 만들어주고
-        새로운 순서대로 배열 생성
-        그걸 또 순서대로 grid 새로 생성
-
-출력
-     1×(폭발한 1번 구슬의 개수) + 2×(폭발한 2번 구슬의 개수) + 3×(폭발한 3번 구슬의 개수)
-     -> bomb에서 처리
+다르게 풀어보깅
 '''
 
 
@@ -49,73 +35,64 @@ def attack():  # 공격!
         grid[nr][nc] = 0
 
 
-def pull():  # 당겨! : 중력처럼 swap 해줌
-    while True:
-        p = 0 # pull 했는지 여부
-        for i in range(len(location_idx) - 1):
-            r, c = location_idx[i]
-            nr, nc = location_idx[i + 1]
-            if grid[r][c] == 0 and grid[nr][nc] != 0:
-                grid[r][c], grid[nr][nc] = grid[nr][nc], grid[r][c]
-                p = 1
-        if not p:
-            break
+def pull():  # 당겨! :
+    arr = []
+    for r, c in location_idx:
+        if grid[r][c] != 0:
+            arr.append((grid[r][c]))
+    return arr
 
 
 def bomb():
+    global arr
     while True:
+        arr.append(0)
         is_bomb = False
-        idx = 0
-        same = 0
-        block = []
-
-        while idx < len(location_idx):
-            r, c = location_idx[idx]
-            if grid[r][c] == same:
-                block.append((r, c))
+        no_bomb = []
+        same = arr[0]
+        tmp = [same]
+        idx = 1
+        while idx < len(arr):
+            num = arr[idx]
+            if num == same:
+                tmp.append(num)
             else:
-                same = grid[r][c]
-                if len(block) >= 4:
-                    num = grid[block[0][0]][block[0][1]]
-                    ans[num - 1] += (len(block))
+                if len(tmp) >= 4:
+                    ans[tmp[0] - 1] += len(tmp)
                     is_bomb = True
-                    for br, bc in block:
-                        grid[br][bc] = 0
-                    block = []
+                    tmp = [num]
+                    same = num
                 else:
-                    block = [(r, c)]
-
+                    no_bomb.extend(tmp)
+                    same = num
+                    tmp = [num]
             idx += 1
+        arr = no_bomb
         if not is_bomb:
             break
-
-        pull()  # 다시 당기기
 
 
 def fill():
     global grid
-    arr = []
-    for r, c in location_idx:
-        if grid[r][c]:
-            arr.append(grid[r][c]) # 기존 배열을 1차원 배열로 변환
-    arr.append(0) # 마지막 숫자 비교를 위해 0 넣어줌
+
+    arr.append(0)  # 마지막 숫자 비교를 위해 0 넣어줌
     new_arr = []
-    same = arr[0] # 일단 첫번째 숫자를 스타트로
+    same = arr[0]  # 일단 첫번째 숫자를 스타트로
     cnt = 1
     idx = 1
     while idx < len(arr):
         num = arr[idx]
-        if num == same: # 같으면 갯수 증가
+        if num == same:  # 같으면 갯수 증가
             cnt += 1
         else:
-            new_arr.append(cnt) # 아니면 여태 몇개였는지 추가
+            new_arr.append(cnt)  # 아니면 여태 몇개였는지 추가
             new_arr.append(same)
             same = num
-            cnt = 1 # cnt 초기화
+            cnt = 1  # cnt 초기화
         idx += 1
 
-    grid = [[0] * n for i in range(n)] # 배열 새로!
-    for r, c in location_idx: # 새로 만들어진 숫자들 넣어주기
+    grid = [[0] * n for i in range(n)]  # 배열 새로!
+    for r, c in location_idx:  # 새로 만들어진 숫자들 넣어주기
         # 아무리 많아도 map을 채울 수 있는 만큼만
         if new_arr:
             grid[r][c] = new_arr.pop(0)
@@ -135,8 +112,7 @@ for a in range(attack_num):
     d -= 1
 
     attack()  # 공격
-    pull()  # 당겨줌
+    arr = pull()  # 당겨줌
     bomb()  # 폭발
     fill()  # 채워줌
-
 print(ans[0] * 1 + ans[1] * 2 + ans[2] * 3)
