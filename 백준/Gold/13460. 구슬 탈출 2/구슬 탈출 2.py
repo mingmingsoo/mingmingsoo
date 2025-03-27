@@ -1,107 +1,112 @@
 '''
-두번째 풀이
-    내가 풀면서도 변수명 헷갈렸음...
-    변수명 다시
-문제설명
-    동서남북으로 기울여서 빨간구슬 빼기
-    1. 파란 구슬이 먼저 빠지면 실패
-    2. 빨간 구슬과 파란 구슬이 동시에 빠져도 실패
-    3. 10번까지만 가능
+# visited 로직도 추가하기 -> 시간 91 -< 49 로 줄어듬
 
+0322 코드트리 2개의 사탕
+문제시작 19:34~ 입력받기 6분 종료 20:00
+
+문제설명
+    상자를 상하좌우로 기울여서 빨간사탕을 빼내기
+    1. 파란사탕이 나와선 안됨
+    2. 동시에 나와서도 안됨
+    3. 즉 빨간사탕만 나와야함
+입력
+    맵 정보
+출력
+    상자를 기울이는 최소 횟수
 구상
-    while로 동서남북을 보내고 가다가 O를 만나는지 검사한다.
-    1. 이때 빨간것도 O고 파란것도 O면 continue
-    2. 이때 빨간건 아닌데 파란거가 O면 continue
-    3. 중복 위치를 검사하는게 어려운데
-        보내면서 다른 공의 위치를 각자 검사해준다.
-    visited는 쓰지 않겠다.
+    1. bfs로 상하좌우 움직인 것을 q에 넣어준다.
+    2. 조건 검사를 파란사탕이 들어왔으면 continue 해서 그 답을 피해가게함
+    3. 위치가 겹칠때 처리를 해줘야함.(누가 먼저 왔냐 따져주기)
+    4. 최대 답은 10임
+        즉 11이 되면 return 하기 -> 조건문 위치 중요
+    5. #으로 막혀있어서 범위검사는 안해도 될듯
 '''
 from collections import deque
 
 n, m = map(int, input().split())
 grid = [list(input()) for i in range(n)]
-red_r = red_c = blue_r = blue_c = -1
-for i in range(n):
-    for j in range(m):
+red_r = red_c = blue_r = blue_c = er = ec = - 1
+for i in range(1, n - 1):
+    for j in range(1, m - 1):
         if grid[i][j] == "R":
             red_r, red_c = i, j
             grid[i][j] = "."
         elif grid[i][j] == "B":
             blue_r, blue_c = i, j
             grid[i][j] = "."
+        elif grid[i][j] == "O":
+            er, ec = i, j
+            grid[i][j] = "."
 
-q = deque([(red_r, red_c, blue_r, blue_c, 0)])
 ans = -1
+
 row = [-1, 1, 0, 0]
-col = [0, 0, 1, -1]
+col = [0, 0, -1, 1]
 
 
-def game():
+def move(origin_r, origin_c, k):
+    r, c = origin_r, origin_c
+    while True:
+        nr = r + row[k]
+        nc = c + col[k]
+
+        if grid[nr][nc] == "#":
+            break
+        r = nr
+        c = nc
+        if (r, c) == (er, ec):
+            break
+
+    return r, c
+
+
+def bfs(srr, src, sbr, sbc):
     global ans
+    q = deque([(srr, src, sbr, sbc, 0)])
+    visited = set([(srr, src, sbr, sbc)])
     while q:
-        red_r, red_c, blue_r, blue_c, cnt = q.popleft()
-        if cnt > 10:
+        red_r, red_c, blue_r, blue_c, time = q.popleft()
+        if time > 10:  # 게임 종료
             return
-        if grid[blue_r][blue_c] == "O":  # 파란거 왔으면 동시에 왔든, 파랑이만 왔든 다음꺼 탐색.
-            continue
-        if grid[red_r][red_c] == "O":
-            ans = cnt
+        if (blue_r, blue_c) == (er, ec):
+            continue  # 파란공 들어왔으면 넘어가기
+        if (red_r, red_c) == (er, ec):
+            ans = time  # 빨간공만 들어왔으면 종료
             return
 
-        origin_red_r, origin_red_c, origin_blue_r, origin_blue_c = red_r, red_c, blue_r, blue_c
         for k in range(4):
-            red_r, red_c, blue_r, blue_c = origin_red_r, origin_red_c, origin_blue_r, origin_blue_c
-            # 빨강이 움직여
-            while True:
-                next_red_r = red_r + row[k]
-                next_red_c = red_c + col[k]
-                if 0 <= next_red_r < n and 0 <= next_red_c < m and grid[next_red_r][next_red_c] != "#":
-                    red_r = next_red_r
-                    red_c = next_red_c
-                    if grid[red_r][red_c] == "O":
-                        break
-                else:
-                    break
-            # 파랑이 움직여
-            while True:
-                next_blue_r = blue_r + row[k]
-                next_blue_c = blue_c + col[k]
-                # 파랑이 검사.
-                if 0 <= next_blue_r < n and 0 <= next_blue_c < m and grid[next_blue_r][next_blue_c] != "#":  #
-                    blue_r = next_blue_r
-                    blue_c = next_blue_c
-                    if grid[blue_r][blue_c] == "O":
-                        break
-                else:
-                    break
+            next_red_r, next_red_c = move(red_r, red_c, k)
+            next_blue_r, next_blue_c = move(blue_r, blue_c, k)
 
-            # 중복되는 위치 검사.
-            if red_r == blue_r and red_c == blue_c and not grid[red_r][red_c] == "O":  # 목적지말고
-                if k == 0:  # 북쪽으로 갔음
-                    if origin_blue_r > origin_red_r:
-                        blue_r += 1
+            if (next_red_r, next_red_c) == (next_blue_r, next_blue_c) and (next_red_r, next_red_c) != (er, ec):
+                # 공 빠질때말고 겹쳤을 때 처리 필요
+                if k == 0:  # 상
+                    if blue_r < red_r:
+                        next_red_r += 1
                     else:
-                        red_r += 1
-                elif k == 1:  # 남쪽으로 갔음
-                    if origin_blue_r < origin_red_r:
-                        blue_r -= 1
+                        next_blue_r += 1
+                elif k == 1:  # 하
+                    if blue_r > red_r:
+                        next_red_r -= 1
                     else:
-                        red_r -= 1
-                elif k == 2:  # 오른쪽으로 갔음
-                    if origin_blue_c < origin_red_c:  # 파란색이 왼쪽에 있었으면
-                        blue_c -= 1
+                        next_blue_r -= 1
+                elif k == 2:  # 좌
+                    if blue_c < red_c:
+                        next_red_c += 1
                     else:
-                        red_c -= 1
-                elif k == 3:  # 왼쪽으로 갔음
-                    if origin_blue_c > origin_red_c:  # 파란색이 오른쪽에 있었으면
-                        blue_c += 1
+                        next_blue_c += 1
+                elif k == 3:  # 우
+                    if blue_c > red_c:
+                        next_red_c -= 1
                     else:
-                        red_c += 1
-            # 빨, 파 둘 다 가만히 있었으면 q에 안넣어줌
-            if not (
-                    red_r == origin_red_r and red_c == origin_red_c and blue_r == origin_blue_r and blue_c == origin_blue_c):
-                q.append((red_r, red_c, blue_r, blue_c, cnt + 1))
+                        next_blue_c -= 1
+            if (red_r, red_c) == (next_red_r, next_red_c) and (blue_r, blue_c) == (next_blue_r, next_blue_c):
+                continue
+            else:
+                if (next_red_r, next_red_c, next_blue_r, next_blue_c) not in visited:
+                    visited.add((next_red_r, next_red_c, next_blue_r, next_blue_c))
+                    q.append((next_red_r, next_red_c, next_blue_r, next_blue_c, time + 1))
 
 
-game()
+bfs(red_r, red_c, blue_r, blue_c)
 print(ans)
