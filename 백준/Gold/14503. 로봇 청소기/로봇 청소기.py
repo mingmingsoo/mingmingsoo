@@ -1,65 +1,54 @@
 '''
-
-두번째 풀이
-    불필요한 visited True 주석처리, input
-
-문제설명
-    1. 현재 방향 기준으로 왼쪽 방향으로 간 적 없으면 좌회전해서 1칸 간다
-    2. 1번에서 이미 방문했거나 도로가 아니면 1번으로 돌아감
-    3. 4방향 모두 전진하지 못하면 후진(방향 유지)
-    4. 후진 못하면 끝
+문제 설명
+    1. 현재 d 기준 왼쪽 회전으로 간 적 없으면 인도일 경우 간다
+        - 만약 인도거나 이미 간 곳이면 다시 좌회전
+        - 4바퀴 다 돌았는데 못가면 방향 유지한 채 후진
+    2. 다시 1번
+        - 후진까지 못하면 끝.
 
 입력
-    맵 크기
-    초기 위치, 방향
-    맵 (도로 0, 인도 1)
-출력
-    총 면적 (visited가 True 인 애들의 갯수)
-
-구상
-    조건 잘 따져야...
+    맵 크기 n,m
+    초기 r,c,d (0123 북동남서)
+    맵 정보
+        인도는 1
+        테투리는 모두 1
+        -> 범위 검사 안한다.
 '''
-import sys
-input = sys.stdin.readline
+
 n, m = map(int, input().split())
-r,c,d = map(int, input().split())
+r, c, d = map(int, input().split())
 grid = [list(map(int, input().split())) for i in range(n)]
+
 visited = [[False] * m for i in range(n)]
 visited[r][c] = True
 row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
-cnt = 0 # 헛도는거 확인용
-
 while True:
-    # 1. 현재 방향 기준으로 왼쪽 방향으로 간 적 없으면 좌회전해서 1칸 간다 -> 이게 근데 현재방향이 유지 되는건가?ㅠㅠ 아니라고 가정하고 풀자
-    # 방향이 바뀌는게 맞았음. yeah!
-    nr = r + row[(d + 3) % 4]
-    nc = c + col[(d + 3) % 4]
-    if not visited[nr][nc] and grid[nr][nc] == 0 :
-        # 이러면 갈 수 있다.
-        cnt = 0 # 갔으니까 헛도는거 초기화
-        visited[nr][nc] = True
+    # 1. 현재 d 기준 왼쪽 회전으로 간 적 없으면 인도일 경우 간다
+    #     - 만약 인도거나 이미 간 곳이면 다시 좌회전
+    move = False
+    for k in range(4):
         d = (d + 3) % 4
-        r = nr
-        c = nc
-    else:
-        # 2. 1번에서 이미 방문했거나 도로가 아니면 좌회전하고 1번으로 돌아감
-        d = (d + 3) % 4  # 방향만 바꾸기
-        cnt += 1  # 한바퀴 돌았다.
-    if cnt > 3:  # 3. 4방향 모두 전진하지 못하면 == 나 한 자리에서 4번 돌았다.
-        nr = r - row[d]
-        nc = c - col[d]
-        if grid[nr][nc] == 0: # 후진할 수 있으면
-            # 여기서 중요한건 visited를 따지지 않는 것
-            # visited[nr][nc] = True # 이건 없어도 됨... 어차피 후진이니까
+        nr = r + row[d]
+        nc = c + col[d]
+        if not visited[nr][nc] and grid[nr][nc] == 0:
+            move = True
+            visited[nr][nc] = True
             r = nr
             c = nc
-            cnt = 0 # 갔으니까 헛도는거 초기화
-        # 4. 후진 못하면 끝
-        else:
+            break
+    #     - 4바퀴 다 돌았는데 못가면 방향 유지한 채 후진
+    if not move:
+        back = False
+        if not move:
+            nr = r - row[d]
+            nc = c - col[d]
+            if grid[nr][nc] == 0:
+                visited[nr][nc] = True
+                back = True
+                r = nr
+                c = nc
+        if not back:
             break
 
-ans = 0
-for _ in visited:
-    ans += _.count(True)
-print(ans)
+print(sum(map(sum, visited)))
