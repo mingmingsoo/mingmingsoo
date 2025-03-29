@@ -17,9 +17,8 @@ def is_ok(row):
             idx += 1
         elif row[idx] == height + 1:  # 전보다 한 칸 높아
             if karo >= length:
-                idx += 1
                 height += 1
-                karo = 1
+                karo = 0
             else:
                 return False
         elif row[idx] == height - 1:  # 전보다 한 칸 낮아
