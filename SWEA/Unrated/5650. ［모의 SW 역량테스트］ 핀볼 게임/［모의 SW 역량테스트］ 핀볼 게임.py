@@ -1,3 +1,5 @@
+# 최적화 -> 사실 벽만나면 게임 끝임
+
 T = int(input())
 for tc in range(T):
     from collections import defaultdict
@@ -29,14 +31,11 @@ for tc in range(T):
 
             # 종료 조건
             if grid[nr][nc] == -1 or (nr, nc) == (sr, sc):
-                ans = max(ans, score)
-
-                break
+                return score
 
             if d == 0:
                 if grid[nr][nc] == 1 or grid[nr][nc] == 4 or grid[nr][nc] == 5:
-                    d = (d + 2) % 4
-                    score += 1
+                    return score * 2 + 1
                 elif grid[nr][nc] == 2:
                     d = 1
                     score += 1
@@ -45,8 +44,7 @@ for tc in range(T):
                     score += 1
             elif d == 1:
                 if grid[nr][nc] == 1 or grid[nr][nc] == 2 or grid[nr][nc] == 5:
-                    d = (d + 2) % 4
-                    score += 1
+                    return score * 2 + 1
                 elif grid[nr][nc] == 3:
                     d = 2
                     score += 1
@@ -55,8 +53,7 @@ for tc in range(T):
                     score += 1
             elif d == 2:
                 if grid[nr][nc] == 2 or grid[nr][nc] == 3 or grid[nr][nc] == 5:
-                    d = (d + 2) % 4
-                    score += 1
+                    return score * 2 + 1
                 elif grid[nr][nc] == 1:
                     d = 1
                     score += 1
@@ -65,8 +62,7 @@ for tc in range(T):
                     score += 1
             elif d == 3:
                 if grid[nr][nc] == 3 or grid[nr][nc] == 4 or grid[nr][nc] == 5:
-                    d = (d + 2) % 4
-                    score += 1
+                    return score * 2 + 1
                 elif grid[nr][nc] == 1:
                     d = 0
                     score += 1
@@ -83,11 +79,12 @@ for tc in range(T):
                     nr, nc = wsr, wsc
             r = nr
             c = nc
+        return 0
 
 
     for i in range(1, n - 1):
         for j in range(1, n - 1):
             if not grid[i][j]:
                 for k in range(4):
-                    game(i, j, k)
+                    ans = max(game(i, j, k), ans)
     print(f"#{tc + 1} {ans}")
