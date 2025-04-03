@@ -1,125 +1,103 @@
 '''
-문제설명
-    1. 검은색(-1)/ 무지개(0)/ 일반 블록(1~M)이 있다
-    2. 블록 그룹이 존재한다
-        - 일반블록이 적어도 1개이고 그 일반블록은 색이 모두 같아야함
-        - 검은블록 포함하면 안됨
-        - 무지개는 얼마나 들어있든 상관 없음
-        - 블록은 2보다 크거나 같음
-        - 이 블록의 기준블록은 일반블록 중에서 행과 열이 가장 작은 것임
-    3. 오토 플레이 기능
-        크기가 가장 큰 블록을 찾음
-        1.여러개면 무지개 블록의 수가 가장 많은 것
-        2.그게 같다면 기준 블록의 행이 가장 큰것, 열이 가장 큰 것
-        3. 블록 제거
-    4. 중력/반시계/중력이 작용하는데
-        -1 인 검은색 블록을 제외 한 모든 불록이 떨어진다.
-구상
-    - 오토플레이는 블록 그룹이 존재하는 동안 계속 반복됨;;
-    1. 일단 가장 큰 블록 그룹을 찾아야한다.
-        max_block = [], maxi = 0 로 두고
-        각 점마다 bfs 돌려서 클 때마다 두개를 갱신해줘야함
-        왜냐하면 0인애들은 일반블록이 모두 포함시킬 수 있기 때문 -> 이ㅓㄱ떄문이다
-        그러므로 visited는 일반블록에만 처리한다.
-    2. 떨구는게 중요한데......
-        떨어지는 애들을 F로 표시하자
-        아래에서부터 내가 F이고 위의 숫자가 -1이 아닌 숫자면 떨어뜨려준다.
-입력
-    변 크기 N, 색상 갯수 M
-출력
+코드ㅡ트리랑 다르자다닫!!!
 '''
 from collections import deque
 
-
-def bfs(r, c, num):
-    q = deque([(r, c)])  # 0인애들 visited 처리 안한다.
-    location, center, zero_visited = [], [], set()
-    mujigae = 0
-    while q:
-        r, c = q.popleft()
-        location.append((r, c))
-        if grid[r][c] == 0:
-            mujigae += 1
-        else:
-            center.append((r, c))
-        for k in range(4):
-            nr = r + row[k]
-            nc = c + col[k]
-            if not (0 <= nr < n and 0 <= nc < n) or visited[nr][nc]:
-                continue
-            if grid[nr][nc] == num:
-                visited[nr][nc] = True
-                q.append((nr, nc))
-            if grid[nr][nc] == 0 and (nr, nc) not in zero_visited:
-                zero_visited.add((nr, nc))
-                q.append((nr, nc))
-
-    if len(location) <= 1:
-        return -1, -1, -1, -1, []
-    else:
-        center.sort()
-        return len(location), mujigae, center[0][0], center[0][1], location
-
-
-def delete(location):
-    for r, c in location:
-        grid[r][c] = 9  # 9면 떨어진다.
-
-
-def fall():
-    for j in range(n):
-        while True:
-            down = 0
-            for i in range(n - 1, 0, -1):
-                if grid[i][j] == 9 and 0 <= grid[i - 1][j] < 6:
-                    down += 1
-                    grid[i][j], grid[i - 1][j] = grid[i - 1][j], grid[i][j]
-            if down == 0:
-                break
+n, m = map(int, input().split())
+grid = [list(map(int, input().split())) for i in range(n)]
+score = 0
 
 
 def myprint():
     for i in range(n):
         for j in range(n):
-            if grid[i][j] == 9:
+            if grid[i][j] == 6:
                 print(" ", end=" ")
             elif grid[i][j] == -1:
-                print("X", end=" ")
+                print("B", end=" ")
             else:
                 print(grid[i][j], end=" ")
         print()
 
 
 def rotation():
-    copy_grid = [_[:] for _ in grid]
+    grid_origin = [_[:] for _ in grid]
     for i in range(n):
         for j in range(n):
-            grid[i][j] = copy_grid[j][n - i - 1]
+            grid[i][j] = grid_origin[j][n - i - 1]
 
 
-score = 0
-n, m = map(int, input().split())
-grid = [list(map(int, input().split())) for i in range(n)]
-row = [-1, 1, 0, 0]
-col = [0, 0, 1, -1]
+def gravity():
+    for j in range(n):
+        while True:
+            down = False
+            for i in range(n - 1, 0, -1):
+                if grid[i][j] == 6 and 0 <= grid[i - 1][j] <= 5:
+                    down = True
+                    grid[i][j], grid[i - 1][j] = grid[i - 1][j], grid[i][j]
+            if not down:
+                break
+
+
+def bfs(r, c):
+    cnt = 0
+    red = 0
+    location = []
+    visited[r][c] = True
+    q = deque([(r, c)])
+    red_visited = set()
+    color = grid[r][c]
+    while q:
+        r, c = q.popleft()
+        cnt += 1
+        if grid[r][c] == 0: red += 1
+        location.append((r, c))
+
+        for k in range(4):
+            nr = r + row[k]
+            nc = c + col[k]
+            if not (0 <= nr < n and 0 <= nc < n):
+                continue
+            if not visited[nr][nc] and grid[nr][nc] == color:
+                q.append((nr, nc))
+                visited[nr][nc] = True
+            if (nr, nc) not in red_visited and grid[nr][nc] == 0:
+                q.append((nr, nc))
+                red_visited.add((nr, nc))
+
+    if cnt > 1:
+        return cnt, red, location
+    else:
+        return -1, -1, -1
+
 
 while True:
+
+    bomb_lst = []
     visited = [[False] * n for i in range(n)]
-    max_block = []
+
+    row = [-1, 1, 0, 0]
+    col = [0, 0, 1, -1]
+
     for i in range(n):
         for j in range(n):
-            if 0 < grid[i][j] < 6 and not visited[i][j]:
-                visited[i][j] = True
-                ele_maxi, ele_mujigae, ele_r, ele_c, ele_location = bfs(i, j, grid[i][j])
-                if ele_maxi != -1:
-                    max_block.append((ele_maxi, ele_mujigae, ele_r, ele_c, ele_location))
-    if not max_block:  # 오토플레이 안되면 게임 끝
+            if 0 < grid[i][j] < 6 and not visited[i][j]:  # 검, 빨 제외
+                total, red, location = bfs(i, j)
+                if total != -1:
+                    bomb_lst.append((-total, -red, -i, -j, location))
+
+    if bomb_lst:
+        bomb_lst.sort()
+        cnt, lo = bomb_lst[0][0], bomb_lst[0][4]
+        score += cnt ** 2
+        # 6 이 빈공간
+        for br, bc in lo:
+            grid[br][bc] = 6
+    else:
         break
-    max_block.sort(reverse=True)
-    maxi, muji, r, c, location = max_block[0]
-    score += maxi * maxi
-    delete(location)  # 이때 9로 표시
-    fall()  # 떨굼
-    rotation()  # 회전
-    fall()  # 떨굼
+
+    gravity()
+    rotation()
+    gravity()
+
 print(score)
